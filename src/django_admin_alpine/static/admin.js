@@ -23,7 +23,9 @@ function prepareAdminAlpineBeforeLoad() {
 
     if (addNameAsModel && xModel) {
       console.warn(
-        `Element with name "${el.getAttribute("name")}" has both "x-add-name-as-model" and "x-model" attributes. "x-add-name-as-model" will be ignored.`,
+        `Element with name "${el.getAttribute(
+          "name",
+        )}" has both "x-add-name-as-model" and "x-model" attributes. "x-add-name-as-model" will be ignored.`,
       );
     }
 
