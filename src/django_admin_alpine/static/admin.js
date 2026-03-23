@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
   prepareAdminAlpineBeforeLoad();
 });
 
+/**
+ * Extracts prefixed attributes from an element and applies them as Alpine.js directives to a container.
+ * @param {string} prefix - The prefix of the attributes to look for on the element.
+ * @param {HTMLElement} element - The source element containing the prefixed attributes.
+ * @param {HTMLElement|null} container - The target container element to apply the directives to.
+ */
 function applyPrefixedDirectivesToContainer(prefix, element, container) {
   const fieldContainerAttrs = element
     .getAttributeNames()
@@ -16,6 +22,11 @@ function applyPrefixedDirectivesToContainer(prefix, element, container) {
   });
 }
 
+/**
+ * Automatically sets up Alpine.js bindings on form inputs before the page loads.
+ * It assigns 'x-model' based on the 'name' attribute or 'x-add-name-as-model',
+ * updates the form's 'x-data' with initial values, and applies container directives.
+ */
 function prepareAdminAlpineBeforeLoad() {
   document.querySelectorAll("input, select, textarea").forEach((el) => {
     const addNameAsModel = el.hasAttribute("x-add-name-as-model");
@@ -53,6 +64,11 @@ function prepareAdminAlpineBeforeLoad() {
   });
 }
 
+/**
+ * Retrieves the initial value for a given form element based on its type.
+ * @param {HTMLElement} el - The form input element (checkbox, radio, text, etc.).
+ * @returns {string|boolean} The initial value of the element.
+ */
 function getInitialValue(el) {
   if (el.type === "checkbox") {
     return el.checked;
