@@ -1,0 +1,1 @@
+recursive-include src/django_admin_alpine/static *
