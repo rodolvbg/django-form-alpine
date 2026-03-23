@@ -206,5 +206,8 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-
+# Node
 node_modules/
+
+# Coverage
+coverage/

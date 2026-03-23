@@ -42,7 +42,8 @@ function prepareAdminAlpineBeforeLoad() {
 
     if (addNameAsModel || xModel) {
       const name = xModel || el.getAttribute("name");
-      const form = el.closest("form") || el.closest("form");
+      const form = el.closest("form");
+      if (!form) return;
       const data = JSON.parse(form.getAttribute("x-data") || "{}");
       if (!(name in data)) {
         data[name] = getInitialValue(el);
