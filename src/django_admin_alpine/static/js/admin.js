@@ -145,7 +145,9 @@ function getInitialValue(el) {
  */
 function handleInlinePrefix(element, value) {
   if (typeof value === "string" && value.includes("__inline_prefix__")) {
-    const prefixValue = element.closest(".inline-related")?.id || "";
+    const container =
+      element.closest("tr.form-row") || element.closest(".inline-related");
+    const prefixValue = container?.id || "";
     return value.replaceAll("__inline_prefix__", prefixValue);
   }
   return value;

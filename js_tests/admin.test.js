@@ -393,6 +393,28 @@ describe("admin.js tests with Vitest", () => {
       expect(nonfieldErrors.getAttribute("x-show")).toBe("");
     });
 
+    it("should handle tabular inlines (tr.form-row) without row-form-errors sibling (coverage for line 38 null branch)", () => {
+      const table = document.createElement("table");
+      const tbody = document.createElement("tbody");
+
+      const tableRow = document.createElement("tr");
+      tableRow.classList.add("form-row");
+
+      const inputCell = document.createElement("td");
+      const input = document.createElement("input");
+      input.setAttribute("x-inline-container-show", "true");
+      inputCell.appendChild(input);
+      tableRow.appendChild(inputCell);
+
+      tbody.appendChild(tableRow); // No previous sibling
+      table.appendChild(tbody);
+      document.body.appendChild(table);
+
+      window.prepareAdminAlpineBeforeLoad();
+
+      expect(tableRow.getAttribute("x-show")).toBe("");
+    });
+
     it("should gracefully handle form inputs without wrapper elements (field-box matches parenElement)", () => {
       const form = document.createElement("form");
       const input = document.createElement("input");
