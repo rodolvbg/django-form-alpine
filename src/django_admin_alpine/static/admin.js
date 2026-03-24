@@ -7,12 +7,12 @@ function prepareAdminAlpineBeforeLoad() {
     addModelData(el);
 
     applyPrefixedDirectivesToContainer(
-      "x-field-container-",
+      "field-container-",
       el,
       el.closest(".flex-container")?.parentElement || el.parentElement,
     );
     applyPrefixedDirectivesToContainer(
-      "x-form-row-",
+      "form-row-",
       el,
       el.closest(".form-row"),
     );
@@ -26,16 +26,23 @@ function prepareAdminAlpineBeforeLoad() {
  * @param {HTMLElement|null} container - The target container element to apply the directives to.
  */
 function applyPrefixedDirectivesToContainer(prefix, element, container) {
-  const fieldContainerAttrs = element
-    .getAttributeNames()
-    .filter((name) => name.startsWith(prefix));
-  if (!fieldContainerAttrs.length) return;
   if (!container) return;
-  fieldContainerAttrs.forEach((name) => {
-    const value = element.getAttribute(name) || "true";
-    const directive = name.replace(prefix, "").trim();
-    if (!directive) return;
-    container.setAttribute(`x-${directive}`, value === "true" ? "" : value);
+  const prefixes = ["x-", "@"];
+
+  element.getAttributeNames().forEach((name) => {
+    for (const p of prefixes) {
+      const fullPrefix = `${p}${prefix}`;
+      if (name.startsWith(fullPrefix)) {
+        const directive = name.slice(fullPrefix.length).trim();
+        if (!directive) continue;
+        const value = element.getAttribute(name) || "true";
+        container.setAttribute(
+          `${p}${directive}`,
+          value === "true" ? "" : value,
+        );
+        break;
+      }
+    }
   });
 }
 

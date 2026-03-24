@@ -72,7 +72,7 @@ describe("admin.js tests with Vitest", () => {
       const container = document.createElement("div");
 
       window.applyPrefixedDirectivesToContainer(
-        "x-field-container-",
+        "field-container-",
         el,
         container,
       );
@@ -87,7 +87,7 @@ describe("admin.js tests with Vitest", () => {
 
       const container = document.createElement("div");
       window.applyPrefixedDirectivesToContainer(
-        "x-field-container-",
+        "field-container-",
         el,
         container,
       );
@@ -100,11 +100,7 @@ describe("admin.js tests with Vitest", () => {
       el.setAttribute("x-field-container-show", "true");
 
       expect(() => {
-        window.applyPrefixedDirectivesToContainer(
-          "x-field-container-",
-          el,
-          null,
-        );
+        window.applyPrefixedDirectivesToContainer("field-container-", el, null);
       }).not.toThrow();
     });
 
@@ -114,7 +110,7 @@ describe("admin.js tests with Vitest", () => {
       const container = document.createElement("div");
 
       window.applyPrefixedDirectivesToContainer(
-        "x-field-container-",
+        "field-container-",
         el,
         container,
       );
@@ -128,12 +124,36 @@ describe("admin.js tests with Vitest", () => {
       const container = document.createElement("div");
 
       window.applyPrefixedDirectivesToContainer(
-        "x-field-container-",
+        "field-container-",
         el,
         container,
       );
 
       expect(container.getAttribute("x-disabled")).toBe("");
+    });
+  });
+
+  describe("applyPrefixedDirectivesToContainer with @ prefix", () => {
+    it("should apply the @ attributes to the final container", () => {
+      // Use mocks to avoid JSDOM setAttribute strictness with "@"
+      const elMock = {
+        getAttributeNames: () => ["@field-container-click"],
+        getAttribute: (name) =>
+          name === "@field-container-click" ? "alert('hi')" : null,
+      };
+
+      const setAttributeSpy = vi.fn();
+      const containerMock = {
+        setAttribute: setAttributeSpy,
+      };
+
+      window.applyPrefixedDirectivesToContainer(
+        "field-container-",
+        elMock,
+        containerMock,
+      );
+
+      expect(setAttributeSpy).toHaveBeenCalledWith("@click", "alert('hi')");
     });
   });
 
