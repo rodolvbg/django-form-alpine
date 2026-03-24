@@ -2,6 +2,23 @@ document.addEventListener("DOMContentLoaded", () => {
   prepareAdminAlpineBeforeLoad();
 });
 
+function prepareAdminAlpineBeforeLoad() {
+  document.querySelectorAll("input, select, textarea").forEach((el) => {
+    addModelData(el);
+
+    applyPrefixedDirectivesToContainer(
+      "x-field-container-",
+      el,
+      el.closest(".flex-container")?.parentElement || el.parentElement,
+    );
+    applyPrefixedDirectivesToContainer(
+      "x-form-row-",
+      el,
+      el.closest(".form-row"),
+    );
+  });
+}
+
 /**
  * Extracts prefixed attributes from an element and applies them as Alpine.js directives to a container.
  * @param {string} prefix - The prefix of the attributes to look for on the element.
@@ -22,47 +39,26 @@ function applyPrefixedDirectivesToContainer(prefix, element, container) {
   });
 }
 
-/**
- * Automatically sets up Alpine.js bindings on form inputs before the page loads.
- * It assigns 'x-model' based on the 'name' attribute or 'x-add-name-as-model',
- * updates the form's 'x-data' with initial values, and applies container directives.
- */
-function prepareAdminAlpineBeforeLoad() {
-  document.querySelectorAll("input, select, textarea").forEach((el) => {
-    const addNameAsModel = el.hasAttribute("x-add-name-as-model");
-    const xModel = el.getAttribute("x-model");
+function addModelData(el) {
+  const xModel = el.getAttribute("x-add-model-data");
+  const xModelExisting = el.getAttribute("x-model");
 
-    if (addNameAsModel && xModel) {
+  if (xModel) {
+    const form = el.closest("form");
+    if (!form) return;
+    const data = JSON.parse(form.getAttribute("x-data") || "{}");
+    if (!(xModel in data)) {
+      data[xModel] = getInitialValue(el);
+      form.setAttribute("x-data", JSON.stringify(data));
+    }
+    if (xModelExisting) {
       console.warn(
-        `Element with name "${el.getAttribute(
-          "name",
-        )}" has both "x-add-name-as-model" and "x-model" attributes. "x-add-name-as-model" will be ignored.`,
+        `Element ${el.name} has both "x-add-model-data" and "x-model" attributes. "x-add-model-data" will be ignored.`,
       );
+    } else {
+      el.setAttribute("x-model", xModel);
     }
-
-    if (addNameAsModel || xModel) {
-      const name = xModel || el.getAttribute("name");
-      const form = el.closest("form");
-      if (!form) return;
-      const data = JSON.parse(form.getAttribute("x-data") || "{}");
-      if (!(name in data)) {
-        data[name] = getInitialValue(el);
-        form.setAttribute("x-data", JSON.stringify(data));
-      }
-      el.setAttribute("x-model", name);
-    }
-
-    applyPrefixedDirectivesToContainer(
-      "x-field-container-",
-      el,
-      el.closest(".flex-container")?.parentElement || el.parentElement,
-    );
-    applyPrefixedDirectivesToContainer(
-      "x-form-row-",
-      el,
-      el.closest(".form-row"),
-    );
-  });
+  }
 }
 
 /**

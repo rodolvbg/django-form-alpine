@@ -15,17 +15,14 @@ describe("admin.js tests with Vitest", () => {
     it("should execute prepareAdminAlpineBeforeLoad automatically", () => {
       const form = document.createElement("form");
       const input = document.createElement("input");
-      input.name = "dom_loaded_test";
-      input.setAttribute("x-add-name-as-model", "true");
+      input.setAttribute("x-add-model-data", "dom_loaded_test");
       form.appendChild(input);
       document.body.appendChild(form);
 
-      // Disparar el evento que 'admin.js' está escuchando al momento del import
       const event = document.createEvent("Event");
       event.initEvent("DOMContentLoaded", true, true);
       document.dispatchEvent(event);
 
-      // Verificamos que se ejecutó correctamente viendo un efecto secundario (x-model se agregó)
       expect(input.getAttribute("x-model")).toBe("dom_loaded_test");
     });
   });
@@ -153,9 +150,8 @@ describe("admin.js tests with Vitest", () => {
 
       const input = document.createElement("input");
       input.type = "text";
-      input.name = "my_field";
       input.value = "my_val";
-      input.setAttribute("x-add-name-as-model", "true");
+      input.setAttribute("x-add-model-data", "my_field");
       input.setAttribute("x-field-container-show", "true");
 
       flexContainer.appendChild(input);
@@ -174,12 +170,12 @@ describe("admin.js tests with Vitest", () => {
       expect(updatedData.existing_data).toBe("123");
     });
 
-    it("should warn if both x-add-name-as-model and x-model are present", () => {
+    it("should warn if both x-add-model-data and x-model are present", () => {
       const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
       const form = document.createElement("form");
       const input = document.createElement("input");
       input.name = "test_warn";
-      input.setAttribute("x-add-name-as-model", "true");
+      input.setAttribute("x-add-model-data", "true");
       input.setAttribute("x-model", "test_warn_model");
       form.appendChild(input);
       document.body.appendChild(form);
@@ -187,7 +183,7 @@ describe("admin.js tests with Vitest", () => {
       window.prepareAdminAlpineBeforeLoad();
 
       expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('has both "x-add-name-as-model" and "x-model"'),
+        expect.stringContaining('has both "x-add-model-data" and "x-model"'),
       );
       expect(input.getAttribute("x-model")).toBe("test_warn_model");
       spy.mockRestore();
@@ -201,7 +197,7 @@ describe("admin.js tests with Vitest", () => {
       input.type = "text";
       input.name = "kept_field";
       input.value = "new-value"; // Should be ignored because kept_field exists
-      input.setAttribute("x-add-name-as-model", "true");
+      input.setAttribute("x-add-model-data", "kept_field");
 
       form.appendChild(input);
       document.body.appendChild(form);
@@ -230,7 +226,7 @@ describe("admin.js tests with Vitest", () => {
     it("should return early and not throw if input is completely outside a form", () => {
       const input = document.createElement("input");
       input.type = "text";
-      input.setAttribute("x-add-name-as-model", "true");
+      input.setAttribute("x-add-model-data", "true");
 
       // input not wraped in a form appended directly to body
       document.body.appendChild(input);
