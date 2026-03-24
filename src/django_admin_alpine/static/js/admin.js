@@ -57,7 +57,10 @@ function applyPrefixedDirectivesToContainer(prefix, element, container) {
       if (name.startsWith(fullPrefix)) {
         const directive = name.slice(fullPrefix.length).trim();
         if (!directive) continue;
-        const value = element.getAttribute(name) || "true";
+
+        let value = element.getAttribute(name) || "true";
+        value = handleInlinePrefix(element, value);
+
         container.setAttribute(
           `${p}${directive}`,
           value === "true" ? "" : value,
@@ -74,10 +77,11 @@ function applyPrefixedDirectivesToContainer(prefix, element, container) {
  * @param {HTMLElement} el - The form input element to process.
  */
 function addModelData(el) {
-  const xModel = el.getAttribute("x-add-model-data");
+  let xModel = el.getAttribute("x-add-model-data");
   const xModelExisting = el.getAttribute("x-model");
 
   if (xModel) {
+    xModel = handleInlinePrefix(el, xModel);
     const form = el.closest("form");
     if (!form) return;
     const data = JSON.parse(form.getAttribute("x-data") || "{}");
@@ -110,4 +114,19 @@ function getInitialValue(el) {
   }
 
   return el.value ?? "";
+}
+
+/**
+ * Processes a string to replace the special placeholder __inline_prefix__
+ * with the ID of the closest .inline-related container.
+ * @param {HTMLElement} element - The element to find the prefix for.
+ * @param {string} value - The string to process.
+ * @returns {string} The processed string with replacements made.
+ */
+function handleInlinePrefix(element, value) {
+  if (typeof value === "string" && value.includes("__inline_prefix__")) {
+    const prefixValue = element.closest(".inline-related")?.id || "";
+    return value.replaceAll("__inline_prefix__", prefixValue);
+  }
+  return value;
 }

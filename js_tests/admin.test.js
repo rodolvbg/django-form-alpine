@@ -157,6 +157,64 @@ describe("admin.js tests with Vitest", () => {
     });
   });
 
+  describe("applyPrefixedDirectivesToContainer with __inline_prefix__", () => {
+    it("should replace __inline_prefix__ with empty string if no .inline-related container is found", () => {
+      const el = document.createElement("input");
+      el.setAttribute("x-field-container-model", "__inline_prefix__field");
+
+      const container = document.createElement("div");
+      window.applyPrefixedDirectivesToContainer(
+        "field-container",
+        el,
+        container,
+      );
+
+      expect(container.getAttribute("x-model")).toBe("field");
+    });
+
+    it("should replace __inline_prefix__ with the ID of the closest .inline-related container", () => {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("inline-related");
+      wrapper.id = "items-0-";
+
+      const el = document.createElement("input");
+      el.setAttribute("x-field-container-model", "__inline_prefix__otherField");
+      wrapper.appendChild(el);
+
+      const container = document.createElement("div");
+      window.applyPrefixedDirectivesToContainer(
+        "field-container",
+        el,
+        container,
+      );
+
+      expect(container.getAttribute("x-model")).toBe("items-0-otherField");
+    });
+
+    it("should replace multiple occurrences of __inline_prefix__ using the container ID", () => {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("inline-related");
+      wrapper.id = "form-2-";
+
+      const el = document.createElement("input");
+      el.setAttribute(
+        "x-field-container-show",
+        "__inline_prefix__field1 && __inline_prefix__field2 !== ''",
+      );
+      wrapper.appendChild(el);
+
+      const container = document.createElement("div");
+      window.applyPrefixedDirectivesToContainer(
+        "field-container",
+        el,
+        container,
+      );
+
+      expect(container.getAttribute("x-show")).toBe(
+        "form-2-field1 && form-2-field2 !== ''",
+      );
+    });
+  });
   describe("prepareAdminAlpineBeforeLoad", () => {
     it("should initialize x-model and update x-data in the form", () => {
       const form = document.createElement("form");
@@ -255,6 +313,29 @@ describe("admin.js tests with Vitest", () => {
       expect(() => {
         window.prepareAdminAlpineBeforeLoad();
       }).not.toThrow();
+    });
+
+    it("should replace __inline_prefix__ in x-add-model-data correctly", () => {
+      const form = document.createElement("form");
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("inline-related");
+      wrapper.id = "items-1-";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.id = "id_items-1-myfield";
+      input.value = "hello";
+      input.setAttribute("x-add-model-data", "__inline_prefix__myfield");
+
+      wrapper.appendChild(input);
+      form.appendChild(wrapper);
+      document.body.appendChild(form);
+
+      window.prepareAdminAlpineBeforeLoad();
+
+      const data = JSON.parse(form.getAttribute("x-data"));
+      expect(data["items-1-myfield"]).toBe("hello");
+      expect(input.getAttribute("x-model")).toBe("items-1-myfield");
     });
   });
 });
