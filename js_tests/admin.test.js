@@ -288,6 +288,38 @@ describe("admin.js tests with Vitest", () => {
       expect(updatedData.kept_field).not.toBe("new-value");
     });
 
+    it("should use .field-box as fieldBox if present", () => {
+      const fieldBox = document.createElement("div");
+      fieldBox.classList.add("field-box");
+      const input = document.createElement("input");
+      input.setAttribute("x-field-box-show", "true");
+      fieldBox.appendChild(input);
+      document.body.appendChild(fieldBox);
+
+      window.prepareAdminAlpineBeforeLoad();
+      expect(fieldBox.getAttribute("x-show")).toBe("");
+    });
+
+    it("should use label.parentElement as fieldBox if .field-box is missing", () => {
+      const formRow = document.createElement("div");
+      formRow.classList.add("form-row");
+      const fieldBoxSubstitute = document.createElement("div");
+      const label = document.createElement("label");
+      label.setAttribute("for", "my_id");
+
+      const input = document.createElement("input");
+      input.id = "my_id";
+      input.setAttribute("x-field-box-show", "true");
+
+      fieldBoxSubstitute.appendChild(label);
+      fieldBoxSubstitute.appendChild(input);
+      formRow.appendChild(fieldBoxSubstitute);
+      document.body.appendChild(formRow);
+
+      window.prepareAdminAlpineBeforeLoad();
+      expect(fieldBoxSubstitute.getAttribute("x-show")).toBe("");
+    });
+
     it("should gracefully handle form inputs without wrapper elements (field-box matches parenElement)", () => {
       const form = document.createElement("form");
       const input = document.createElement("input");
@@ -336,6 +368,18 @@ describe("admin.js tests with Vitest", () => {
       const data = JSON.parse(form.getAttribute("x-data"));
       expect(data["items-1-myfield"]).toBe("hello");
       expect(input.getAttribute("x-model")).toBe("items-1-myfield");
+    });
+
+    it("should handle elements without parents gracefully (coverage for line 35 null branch)", () => {
+      const input = document.createElement("input");
+      // Manually mock querySelectorAll to return our orphaned input
+      const spy = vi
+        .spyOn(document, "querySelectorAll")
+        .mockReturnValue([input]);
+
+      expect(() => window.prepareAdminAlpineBeforeLoad()).not.toThrow();
+
+      spy.mockRestore();
     });
   });
 });
