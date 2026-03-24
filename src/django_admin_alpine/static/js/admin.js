@@ -21,6 +21,8 @@ function prepareAdminAlpineBeforeLoad() {
     applyPrefixedDirectives("form-row", formRow);
     const fieldset = el.closest("fieldset");
     applyPrefixedDirectives("fieldset", fieldset);
+    const form = el.closest("form");
+    applyPrefixedDirectives("form", form);
 
     // field elements
     const label = formRow
@@ -32,7 +34,9 @@ function prepareAdminAlpineBeforeLoad() {
     applyPrefixedDirectives("field-box", fieldBox);
     const fieldContainer = fieldBox ? fieldBox.parentElement : null;
     applyPrefixedDirectives("field-container", fieldContainer);
-    const help = fieldContainer ? fieldContainer.querySelector(".help") : null;
+    const errorList = fieldContainer?.querySelector(".errorlist");
+    applyPrefixedDirectives("errorlist", errorList);
+    const help = fieldContainer?.querySelector(".help");
     applyPrefixedDirectives("help", help);
   });
 }

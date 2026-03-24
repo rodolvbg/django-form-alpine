@@ -24,11 +24,11 @@ const exposeToWindowPlugin = {
 export default defineConfig({
   test: {
     environment: "jsdom",
-    exclude: ["node_modules", "src/django_admin_alpine/static/alpine.js"],
+    exclude: ["node_modules", "src/django_admin_alpine/static/js/alpine.js"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
-      include: ["src/django_admin_alpine/static/admin.js"],
+      include: ["src/django_admin_alpine/static/js/admin.js"],
     },
   },
   plugins: [exposeToWindowPlugin],
