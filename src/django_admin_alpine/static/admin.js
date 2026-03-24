@@ -10,16 +10,28 @@ function prepareAdminAlpineBeforeLoad() {
   document.querySelectorAll("input, select, textarea").forEach((el) => {
     addModelData(el);
 
-    applyPrefixedDirectivesToContainer(
-      "field-container-",
-      el,
-      el.closest(".flex-container")?.parentElement || el.parentElement,
-    );
-    applyPrefixedDirectivesToContainer(
-      "form-row-",
-      el,
-      el.closest(".form-row"),
-    );
+    function applyPrefixedDirectives(prefix, container) {
+      applyPrefixedDirectivesToContainer(prefix, el, container);
+    }
+
+    // field elements
+    const label = el.parentElement.querySelector(`label[for="${el.id}"]`);
+    applyPrefixedDirectives("label", label);
+    const fieldBox =
+      el.closest(".field-box") || label?.parentElement || el.parentElement;
+    applyPrefixedDirectives("field-box", fieldBox);
+    const fieldContainer = fieldBox.parentElement;
+    applyPrefixedDirectives("field-container", fieldContainer);
+    const help = fieldContainer.querySelector(".help");
+    applyPrefixedDirectives("help", help);
+
+    // fieldset elements
+    const multiLine = el.closest(".form-multiline");
+    applyPrefixedDirectives("form-multiline", multiLine);
+    const formRow = el.closest(".form-row");
+    applyPrefixedDirectives("form-row", formRow);
+    const fieldset = el.closest("fieldset");
+    applyPrefixedDirectives("fieldset", fieldset);
   });
 }
 
@@ -35,7 +47,7 @@ function applyPrefixedDirectivesToContainer(prefix, element, container) {
 
   element.getAttributeNames().forEach((name) => {
     for (const p of prefixes) {
-      const fullPrefix = `${p}${prefix}`;
+      const fullPrefix = `${p}${prefix}-`;
       if (name.startsWith(fullPrefix)) {
         const directive = name.slice(fullPrefix.length).trim();
         if (!directive) continue;

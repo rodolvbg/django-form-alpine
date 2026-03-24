@@ -72,7 +72,7 @@ describe("admin.js tests with Vitest", () => {
       const container = document.createElement("div");
 
       window.applyPrefixedDirectivesToContainer(
-        "field-container-",
+        "field-container",
         el,
         container,
       );
@@ -87,7 +87,7 @@ describe("admin.js tests with Vitest", () => {
 
       const container = document.createElement("div");
       window.applyPrefixedDirectivesToContainer(
-        "field-container-",
+        "field-container",
         el,
         container,
       );
@@ -100,7 +100,7 @@ describe("admin.js tests with Vitest", () => {
       el.setAttribute("x-field-container-show", "true");
 
       expect(() => {
-        window.applyPrefixedDirectivesToContainer("field-container-", el, null);
+        window.applyPrefixedDirectivesToContainer("field-container", el, null);
       }).not.toThrow();
     });
 
@@ -110,7 +110,7 @@ describe("admin.js tests with Vitest", () => {
       const container = document.createElement("div");
 
       window.applyPrefixedDirectivesToContainer(
-        "field-container-",
+        "field-container",
         el,
         container,
       );
@@ -124,7 +124,7 @@ describe("admin.js tests with Vitest", () => {
       const container = document.createElement("div");
 
       window.applyPrefixedDirectivesToContainer(
-        "field-container-",
+        "field-container",
         el,
         container,
       );
@@ -148,7 +148,7 @@ describe("admin.js tests with Vitest", () => {
       };
 
       window.applyPrefixedDirectivesToContainer(
-        "field-container-",
+        "field-container",
         elMock,
         containerMock,
       );
@@ -184,6 +184,7 @@ describe("admin.js tests with Vitest", () => {
       expect(input.getAttribute("x-model")).toBe("my_field");
 
       expect(wrapper.getAttribute("x-show")).toBe("");
+      expect(form.getAttribute("x-show")).toBe(null); // Should not be on form anymore with this structure
 
       const updatedData = JSON.parse(form.getAttribute("x-data"));
       expect(updatedData.my_field).toBe("my_val");
@@ -229,11 +230,11 @@ describe("admin.js tests with Vitest", () => {
       expect(updatedData.kept_field).not.toBe("new-value");
     });
 
-    it("should gracefully handle form inputs without wrapper elements (closest flex-container fallback to parentElement)", () => {
+    it("should gracefully handle form inputs without wrapper elements (field-box matches parenElement)", () => {
       const form = document.createElement("form");
       const input = document.createElement("input");
       input.type = "text";
-      input.setAttribute("x-field-container-show", "true");
+      input.setAttribute("x-field-box-show", "true");
 
       form.appendChild(input);
       document.body.appendChild(form);
