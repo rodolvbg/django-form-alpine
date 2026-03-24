@@ -45,9 +45,9 @@ function prepareAdminAlpineBeforeLoad() {
     }
 
     // field elements
-    const label = formRow
-      ? formRow.querySelector(`label[for="${el.id}"]`)
-      : null;
+    const label =
+      el?.closest(".flex-container")?.querySelector("label") ||
+      el?.closest(".form-row")?.querySelector("label");
     applyPrefixedDirectives("label", label);
     const fieldBox =
       el.closest(".field-box") || label?.parentElement || el.parentElement;
@@ -58,6 +58,9 @@ function prepareAdminAlpineBeforeLoad() {
     applyPrefixedDirectives("errorlist", errorList);
     const help = fieldContainer?.querySelector(".help");
     applyPrefixedDirectives("help", help);
+
+    // option elements
+    applyPrefixedDirectives("option-label", el.closest("label"));
   });
 }
 
