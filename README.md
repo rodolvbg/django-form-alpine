@@ -1,6 +1,6 @@
 # django-admin-alpine
 
-`django-admin-alpine` is a Django library that facilitates the integration of Alpine.js into your Django Admin forms. It provides a simple way to synchronize form states and apply Alpine.js directives to various administrative elements.
+`django-admin-alpine` is a Django library that facilitates the integration of [Alpine.js](https://alpinejs.dev/) into your Django Admin forms. It provides a simple way to synchronize form states and apply Alpine.js directives to various administrative elements.
 
 ## Installation
 
