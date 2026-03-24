@@ -35,7 +35,7 @@ function applyPrefixedDirectivesToContainer(prefix, element, container) {
     const value = element.getAttribute(name) || "true";
     const directive = name.replace(prefix, "").trim();
     if (!directive) return;
-    container.setAttribute(`x-${directive}`, value);
+    container.setAttribute(`x-${directive}`, value === "true" ? "" : value);
   });
 }
 

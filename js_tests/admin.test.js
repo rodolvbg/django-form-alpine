@@ -77,7 +77,7 @@ describe("admin.js tests with Vitest", () => {
         container,
       );
 
-      expect(container.getAttribute("x-show")).toBe("true");
+      expect(container.getAttribute("x-show")).toBe("");
       expect(container.getAttribute("x-transition")).toBe("fade");
     });
 
@@ -133,7 +133,7 @@ describe("admin.js tests with Vitest", () => {
         container,
       );
 
-      expect(container.getAttribute("x-disabled")).toBe("true");
+      expect(container.getAttribute("x-disabled")).toBe("");
     });
   });
 
@@ -163,7 +163,7 @@ describe("admin.js tests with Vitest", () => {
 
       expect(input.getAttribute("x-model")).toBe("my_field");
 
-      expect(wrapper.getAttribute("x-show")).toBe("true");
+      expect(wrapper.getAttribute("x-show")).toBe("");
 
       const updatedData = JSON.parse(form.getAttribute("x-data"));
       expect(updatedData.my_field).toBe("my_val");
@@ -220,7 +220,7 @@ describe("admin.js tests with Vitest", () => {
 
       window.prepareAdminAlpineBeforeLoad();
 
-      expect(form.getAttribute("x-show")).toBe("true");
+      expect(form.getAttribute("x-show")).toBe("");
     });
 
     it("should return early and not throw if input is completely outside a form", () => {
