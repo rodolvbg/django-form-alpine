@@ -25,19 +25,20 @@ function prepareAdminAlpineBeforeLoad() {
     applyPrefixedDirectives("form", form);
 
     // inline elements
-    let inlineRelated = el.closest(".inline-related");
     let tableRow = el.closest("tr.form-row");
+    let inlineRelated = el.closest(".inline-related");
     if (inlineRelated || tableRow) {
       let inlineContainer;
-
-      let nonFieldErrors;
-      if (inlineRelated) {
-        inlineContainer = inlineRelated;
-        nonFieldErrors = inlineRelated?.querySelector(".errorlist.nonfield");
-      } else if (tableRow) {
+      let nonFieldErrors = null;
+      if (tableRow) {
         inlineContainer = tableRow;
         const prev = tableRow.previousElementSibling;
-        nonFieldErrors = prev?.querySelector(".errorlist.nonfield");
+        nonFieldErrors = prev?.matches(".row-form-errors")
+          ? prev.querySelector(".errorlist.nonfield")
+          : null;
+      } else if (inlineRelated) {
+        inlineContainer = inlineRelated;
+        nonFieldErrors = inlineRelated?.querySelector(".errorlist.nonfield");
       }
       applyPrefixedDirectives("inline-container", inlineContainer);
       applyPrefixedDirectives("nonfield-errorlist", nonFieldErrors);

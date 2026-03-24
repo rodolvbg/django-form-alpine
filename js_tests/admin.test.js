@@ -365,6 +365,7 @@ describe("admin.js tests with Vitest", () => {
       const tbody = document.createElement("tbody");
 
       const headerRow = document.createElement("tr");
+      headerRow.classList.add("row-form-errors");
       const errorCell = document.createElement("td");
       const nonfieldErrors = document.createElement("div");
       nonfieldErrors.classList.add("errorlist", "nonfield");
