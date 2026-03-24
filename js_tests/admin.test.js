@@ -311,13 +311,85 @@ describe("admin.js tests with Vitest", () => {
       input.id = "my_id";
       input.setAttribute("x-field-box-show", "true");
 
-      fieldBoxSubstitute.appendChild(label);
       fieldBoxSubstitute.appendChild(input);
       formRow.appendChild(fieldBoxSubstitute);
       document.body.appendChild(formRow);
 
       window.prepareAdminAlpineBeforeLoad();
+
       expect(fieldBoxSubstitute.getAttribute("x-show")).toBe("");
+    });
+
+    it("should find label inside .form-row", () => {
+      const formRow = document.createElement("div");
+      formRow.classList.add("form-row");
+
+      const label = document.createElement("label");
+      label.setAttribute("for", "id_field");
+
+      const input = document.createElement("input");
+      input.id = "id_field";
+      input.setAttribute("x-label-show", "true");
+
+      formRow.appendChild(label);
+      formRow.appendChild(input);
+      document.body.appendChild(formRow);
+
+      window.prepareAdminAlpineBeforeLoad();
+
+      expect(label.getAttribute("x-show")).toBe("");
+    });
+
+    it("should handle stacked inlines (.inline-related)", () => {
+      const inlineRelated = document.createElement("div");
+      inlineRelated.classList.add("inline-related");
+
+      const nonfieldErrors = document.createElement("div");
+      nonfieldErrors.classList.add("errorlist", "nonfield");
+      inlineRelated.appendChild(nonfieldErrors);
+
+      const input = document.createElement("input");
+      input.setAttribute("x-inline-container-show", "true");
+      input.setAttribute("x-nonfield-errorlist-show", "true");
+      inlineRelated.appendChild(input);
+      document.body.appendChild(inlineRelated);
+
+      window.prepareAdminAlpineBeforeLoad();
+
+      expect(inlineRelated.getAttribute("x-show")).toBe("");
+      expect(nonfieldErrors.getAttribute("x-show")).toBe("");
+    });
+
+    it("should handle tabular inlines (tr.form-row)", () => {
+      const table = document.createElement("table");
+      const tbody = document.createElement("tbody");
+
+      const headerRow = document.createElement("tr");
+      const errorCell = document.createElement("td");
+      const nonfieldErrors = document.createElement("div");
+      nonfieldErrors.classList.add("errorlist", "nonfield");
+      errorCell.appendChild(nonfieldErrors);
+      headerRow.appendChild(errorCell);
+
+      const tableRow = document.createElement("tr");
+      tableRow.classList.add("form-row");
+
+      const inputCell = document.createElement("td");
+      const input = document.createElement("input");
+      input.setAttribute("x-inline-container-show", "true");
+      input.setAttribute("x-nonfield-errorlist-show", "true");
+      inputCell.appendChild(input);
+      tableRow.appendChild(inputCell);
+
+      tbody.appendChild(headerRow);
+      tbody.appendChild(tableRow);
+      table.appendChild(tbody);
+      document.body.appendChild(table);
+
+      window.prepareAdminAlpineBeforeLoad();
+
+      expect(tableRow.getAttribute("x-show")).toBe("");
+      expect(nonfieldErrors.getAttribute("x-show")).toBe("");
     });
 
     it("should gracefully handle form inputs without wrapper elements (field-box matches parenElement)", () => {

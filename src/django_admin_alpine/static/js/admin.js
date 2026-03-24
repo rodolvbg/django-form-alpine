@@ -24,6 +24,25 @@ function prepareAdminAlpineBeforeLoad() {
     const form = el.closest("form");
     applyPrefixedDirectives("form", form);
 
+    // inline elements
+    let inlineRelated = el.closest(".inline-related");
+    let tableRow = el.closest("tr.form-row");
+    if (inlineRelated || tableRow) {
+      let inlineContainer;
+
+      let nonFieldErrors;
+      if (inlineRelated) {
+        inlineContainer = inlineRelated;
+        nonFieldErrors = inlineRelated?.querySelector(".errorlist.nonfield");
+      } else if (tableRow) {
+        inlineContainer = tableRow;
+        const prev = tableRow.previousElementSibling;
+        nonFieldErrors = prev?.querySelector(".errorlist.nonfield");
+      }
+      applyPrefixedDirectives("inline-container", inlineContainer);
+      applyPrefixedDirectives("nonfield-errorlist", nonFieldErrors);
+    }
+
     // field elements
     const label = formRow
       ? formRow.querySelector(`label[for="${el.id}"]`)
