@@ -2,6 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
   prepareAdminAlpineBeforeLoad();
 });
 
+/**
+ * Scans the document for inputs and prepares them for Alpine.js before loading.
+ * It identifies elements requiring state synchronization and applies prefixed directives to their containers.
+ */
 function prepareAdminAlpineBeforeLoad() {
   document.querySelectorAll("input, select, textarea").forEach((el) => {
     addModelData(el);
@@ -46,6 +50,11 @@ function applyPrefixedDirectivesToContainer(prefix, element, container) {
   });
 }
 
+/**
+ * Checks for "x-add-model-data" attribute on an element and synchronizes it with the form's Alpine.js state.
+ * If found, it initializes the model's value in the form's "x-data" if it doesn't already exist.
+ * @param {HTMLElement} el - The form input element to process.
+ */
 function addModelData(el) {
   const xModel = el.getAttribute("x-add-model-data");
   const xModelExisting = el.getAttribute("x-model");
