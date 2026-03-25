@@ -157,10 +157,10 @@ describe("admin.js tests with Vitest", () => {
     });
   });
 
-  describe("applyPrefixedDirectivesToContainer with __inline_prefix__", () => {
-    it("should replace __inline_prefix__ with empty string if no .inline-related container is found", () => {
+  describe("applyPrefixedDirectivesToContainer with __row_prefix__", () => {
+    it("should replace __row_prefix__ with empty string if no .inline-related container is found", () => {
       const el = document.createElement("input");
-      el.setAttribute("x-field-container-model", "__inline_prefix__field");
+      el.setAttribute("x-field-container-model", "__row_prefix__field");
 
       const container = document.createElement("div");
       window.applyPrefixedDirectivesToContainer(
@@ -172,13 +172,13 @@ describe("admin.js tests with Vitest", () => {
       expect(container.getAttribute("x-model")).toBe("field");
     });
 
-    it("should replace __inline_prefix__ with the ID of the closest .inline-related container", () => {
+    it("should replace __row_prefix__ with the ID of the closest .inline-related container", () => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("inline-related");
       wrapper.id = "items-0";
 
       const el = document.createElement("input");
-      el.setAttribute("x-field-container-model", "__inline_prefix__otherField");
+      el.setAttribute("x-field-container-model", "__row_prefix__otherField");
       wrapper.appendChild(el);
 
       const container = document.createElement("div");
@@ -191,7 +191,7 @@ describe("admin.js tests with Vitest", () => {
       expect(container.getAttribute("x-model")).toBe("items_0_otherField");
     });
 
-    it("should replace multiple occurrences of __inline_prefix__ using the container ID", () => {
+    it("should replace multiple occurrences of __row_prefix__ using the container ID", () => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("inline-related");
       wrapper.id = "form-2";
@@ -199,7 +199,7 @@ describe("admin.js tests with Vitest", () => {
       const el = document.createElement("input");
       el.setAttribute(
         "x-field-container-show",
-        "__inline_prefix__field1 && __inline_prefix__field2 !== ''",
+        "__row_prefix__field1 && __row_prefix__field2 !== ''",
       );
       wrapper.appendChild(el);
 
@@ -442,7 +442,7 @@ describe("admin.js tests with Vitest", () => {
       }).not.toThrow();
     });
 
-    it("should replace __inline_prefix__ in x-add-model-data correctly", () => {
+    it("should replace __row_prefix__ in x-add-model-data correctly", () => {
       const form = document.createElement("form");
       const wrapper = document.createElement("div");
       wrapper.classList.add("inline-related");
@@ -452,7 +452,7 @@ describe("admin.js tests with Vitest", () => {
       input.type = "text";
       input.id = "id_items-1-myfield";
       input.value = "hello";
-      input.setAttribute("x-add-model-data", "__inline_prefix__myfield");
+      input.setAttribute("x-add-model-data", "__row_prefix__myfield");
 
       wrapper.appendChild(input);
       form.appendChild(wrapper);

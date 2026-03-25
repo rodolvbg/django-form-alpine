@@ -107,15 +107,15 @@ class MyForm(forms.ModelForm):
     )
 ```
 
-### Handling Inlines with `__inline_prefix__`
+### Handling Inlines with `__row_prefix__`
 
-When working with Django's inline forms, you can use the `__inline_prefix__` placeholder to correctly target fields within the same inline instance:
+When working with Django's inline forms, you can use the `__row_prefix__` placeholder to correctly target fields within the same inline instance:
 
 ```python
-"x-add-model-data": "__inline_prefix__myField"
+"x-add-model-data": "__row_prefix__myField"
 ```
 
-The script will automatically replace `__inline_prefix__` with the unique ID of the inline container.
+The script will automatically replace `__row_prefix__` with the unique ID of the inline container.
 
 ## Contributing
 

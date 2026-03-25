@@ -26,7 +26,7 @@ class ChildModelTabularForm(AdminAlpineMixin, forms.ModelForm):
         required=False,
         widget=forms.CheckboxInput(
             attrs={
-                "x-add-model-data": "__inline_prefix__tabular_extra",
+                "x-add-model-data": "__row_prefix__tabular_extra",
             }
         ),
     )
@@ -41,8 +41,8 @@ class ChildModelStackedForm(AdminAlpineMixin, forms.ModelForm):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "x-add-model-data": "__inline_prefix__stacked_extra",
-                "x-field-box-show": "!__inline_prefix__stacked_extra",
+                "x-add-model-data": "__row_prefix__stacked_extra",
+                "x-field-box-show": "!__row_prefix__stacked_extra",
             }
         ),
     )

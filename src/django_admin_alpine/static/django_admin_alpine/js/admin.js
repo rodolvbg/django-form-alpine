@@ -140,18 +140,28 @@ function getInitialValue(el) {
 }
 
 /**
- * Processes a string to replace the special placeholder __inline_prefix__
+ * Returns the Alpine.js-safe prefix derived from the closest inline container's ID.
+ * Dashes in the container ID are replaced with underscores so the result is a valid JS identifier.
+ * @param {HTMLElement} element - The element to search from.
+ * @returns {string} The sanitized prefix string, or an empty string if no container is found.
+ */
+function getRowPrefix(element) {
+  const container =
+    element.closest("tr.form-row") || element.closest(".inline-related");
+  return (container?.id || "").replaceAll("-", "_");
+}
+
+/**
+ * Processes a string to replace the special placeholder __row_prefix__
  * with the ID of the closest .inline-related container.
  * @param {HTMLElement} element - The element to find the prefix for.
  * @param {string} value - The string to process.
  * @returns {string} The processed string with replacements made.
  */
 function handleInlinePrefix(element, value) {
-  const inlinePrefix = "__inline_prefix__";
+  const inlinePrefix = "__row_prefix__";
   if (typeof value === "string" && value.includes(inlinePrefix)) {
-    const container =
-      element.closest("tr.form-row") || element.closest(".inline-related");
-    const prefixValue = (container?.id || "").replaceAll("-", "_");
+    const prefixValue = getRowPrefix(element);
     if (prefixValue && !value.startsWith(inlinePrefix + "_")) {
       return value.replaceAll(inlinePrefix, prefixValue + "_");
     }
