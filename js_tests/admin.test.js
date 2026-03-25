@@ -158,6 +158,22 @@ describe("admin.js tests with Vitest", () => {
   });
 
   describe("applyPrefixedDirectivesToContainer with __row_prefix__", () => {
+    it("should use element.name to derive the prefix when no container is found", () => {
+      const el = document.createElement("input");
+      el.name = "items-0";
+      el.setAttribute("x-field-container-model", "__row_prefix__field");
+
+      const container = document.createElement("div");
+      window.applyPrefixedDirectivesToContainer(
+        "field-container",
+        el,
+        container,
+      );
+
+      // Fallback: name "items-0" matches /prefix-number/, returned as-is → "items-0_field"
+      expect(container.getAttribute("x-model")).toBe("items-0_field");
+    });
+
     it("should replace __row_prefix__ with empty string if no .inline-related container is found", () => {
       const el = document.createElement("input");
       el.setAttribute("x-field-container-model", "__row_prefix__field");

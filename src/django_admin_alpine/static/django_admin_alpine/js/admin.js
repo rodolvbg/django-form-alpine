@@ -140,23 +140,42 @@ function getInitialValue(el) {
 }
 
 /**
- * Returns the Alpine.js-safe prefix derived from the closest inline container's ID.
- * Dashes in the container ID are replaced with underscores so the result is a valid JS identifier.
- * @param {HTMLElement} element - The element to search from.
- * @returns {string} The sanitized prefix string, or an empty string if no container is found.
+ * Returns the row prefix used to namespace Alpine.js state keys for inline forms.
+ * Resolution order:
+ *  1. Closest "tr.form-row" or ".inline-related" container — its ID with dashes
+ *     replaced by underscores, producing a valid JS identifier (e.g. "items_0").
+ *  2. element.name parsed with the pattern /prefix-number/ — returned as-is with
+ *     the original dash (e.g. "items-0"). Note: this form may not be a valid JS
+ *     identifier in Alpine expressions.
+ *  3. Empty string if neither source yields a match.
+ * @param {HTMLElement} element - The element to resolve the prefix for.
+ * @returns {string} The row prefix string, or "" if none can be determined.
  */
 function getRowPrefix(element) {
   const container =
     element.closest("tr.form-row") || element.closest(".inline-related");
-  return (container?.id || "").replaceAll("-", "_");
+  if (container) {
+    return (container?.id || "").replaceAll("-", "_");
+  }
+  const regex = /^([a-zA-Z0-9_-]+)-(\d+)$/;
+  const match = element?.name?.match(regex);
+
+  if (match) {
+    const prefix = match[1];
+    const index = match[2];
+    return `${prefix}-${index}`;
+  }
+  return "";
 }
 
 /**
  * Processes a string to replace the special placeholder __row_prefix__
- * with the ID of the closest .inline-related container.
- * @param {HTMLElement} element - The element to find the prefix for.
+ * with the prefix returned by getRowPrefix for the given element.
+ * A trailing underscore separator is appended when the prefix is non-empty,
+ * so "__row_prefix__field" becomes e.g. "items_0_field".
+ * @param {HTMLElement} element - The element to resolve the prefix for.
  * @param {string} value - The string to process.
- * @returns {string} The processed string with replacements made.
+ * @returns {string} The processed string with all __row_prefix__ occurrences replaced.
  */
 function handleInlinePrefix(element, value) {
   const inlinePrefix = "__row_prefix__";

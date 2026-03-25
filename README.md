@@ -109,13 +109,23 @@ class MyForm(forms.ModelForm):
 
 ### Handling Inlines with `__row_prefix__`
 
-When working with Django's inline forms, you can use the `__row_prefix__` placeholder to correctly target fields within the same inline instance:
+When working with Django's inline forms, use the `__row_prefix__` placeholder to correctly namespace fields within the same inline instance:
 
 ```python
-"x-add-model-data": "__row_prefix__myField"
+class MyInlineForm(AdminAlpineMixin, forms.ModelForm):
+    my_field = forms.CharField(
+        widget=forms.TextInput(attrs={
+            "x-add-model-data": "__row_prefix__myField",
+            "x-field-box-show": "__row_prefix__otherField",
+        })
+    )
 ```
 
-The script will automatically replace `__row_prefix__` with the unique ID of the inline container.
+`__row_prefix__` is resolved at runtime using the following order:
+
+1. **Inline container ID** — if the element is inside a `.inline-related` or `tr.form-row` element, its `id` is used with dashes replaced by underscores, producing a valid JS identifier (e.g. `items_0`). So `__row_prefix__myField` becomes `items_0_myField`.
+2. **Element `name` attribute** — if no container is found, the element's `name` is parsed looking for a `prefix-number` pattern (e.g. `items-0`). The prefix is used as-is, preserving the dash.
+3. **Empty string** — if neither applies, `__row_prefix__` is simply removed.
 
 ## Contributing
 
