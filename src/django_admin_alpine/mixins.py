@@ -10,7 +10,7 @@ class AdminAlpineMixin:
             "DJANGO_ADMIN_ALPINE_JS_PATH",
             "django_admin_alpine/js/alpine.js",
         )
-        return Media(
+        return super().media + Media(
             js=(
                 Script("django_admin_alpine/js/admin.js", defer=True),
                 Script(alpine_js_path, defer=True),

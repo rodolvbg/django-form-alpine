@@ -117,6 +117,10 @@ When working with Django's inline forms, you can use the `__inline_prefix__` pla
 
 The script will automatically replace `__inline_prefix__` with the unique ID of the inline container.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
