@@ -175,7 +175,7 @@ describe("admin.js tests with Vitest", () => {
     it("should replace __inline_prefix__ with the ID of the closest .inline-related container", () => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("inline-related");
-      wrapper.id = "items-0-";
+      wrapper.id = "items-0";
 
       const el = document.createElement("input");
       el.setAttribute("x-field-container-model", "__inline_prefix__otherField");
@@ -188,13 +188,13 @@ describe("admin.js tests with Vitest", () => {
         container,
       );
 
-      expect(container.getAttribute("x-model")).toBe("items-0-otherField");
+      expect(container.getAttribute("x-model")).toBe("items_0_otherField");
     });
 
     it("should replace multiple occurrences of __inline_prefix__ using the container ID", () => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("inline-related");
-      wrapper.id = "form-2-";
+      wrapper.id = "form-2";
 
       const el = document.createElement("input");
       el.setAttribute(
@@ -211,7 +211,7 @@ describe("admin.js tests with Vitest", () => {
       );
 
       expect(container.getAttribute("x-show")).toBe(
-        "form-2-field1 && form-2-field2 !== ''",
+        "form_2_field1 && form_2_field2 !== ''",
       );
     });
   });
@@ -446,7 +446,7 @@ describe("admin.js tests with Vitest", () => {
       const form = document.createElement("form");
       const wrapper = document.createElement("div");
       wrapper.classList.add("inline-related");
-      wrapper.id = "items-1-";
+      wrapper.id = "items-1";
 
       const input = document.createElement("input");
       input.type = "text";
@@ -461,8 +461,8 @@ describe("admin.js tests with Vitest", () => {
       window.prepareAdminAlpineBeforeLoad();
 
       const data = JSON.parse(form.getAttribute("x-data"));
-      expect(data["items-1-myfield"]).toBe("hello");
-      expect(input.getAttribute("x-model")).toBe("items-1-myfield");
+      expect(data["items_1_myfield"]).toBe("hello");
+      expect(input.getAttribute("x-model")).toBe("items_1_myfield");
     });
 
     it("should handle elements without parents gracefully (coverage for line 35 null branch)", () => {

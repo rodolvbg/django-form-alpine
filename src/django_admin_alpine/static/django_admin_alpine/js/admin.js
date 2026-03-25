@@ -147,14 +147,15 @@ function getInitialValue(el) {
  * @returns {string} The processed string with replacements made.
  */
 function handleInlinePrefix(element, value) {
-  if (typeof value === "string" && value.includes("__inline_prefix__")) {
+  const inlinePrefix = "__inline_prefix__";
+  if (typeof value === "string" && value.includes(inlinePrefix)) {
     const container =
       element.closest("tr.form-row") || element.closest(".inline-related");
     const prefixValue = (container?.id || "").replaceAll("-", "_");
-    if (prefixValue && !value.startsWith("__inline_prefix___")) {
-      return value.replaceAll("__inline_prefix__", prefixValue + "_");
+    if (prefixValue && !value.startsWith(inlinePrefix + "_")) {
+      return value.replaceAll(inlinePrefix, prefixValue + "_");
     }
-    return value.replaceAll("__inline_prefix__", prefixValue);
+    return value.replaceAll(inlinePrefix, prefixValue);
   }
   return value;
 }
