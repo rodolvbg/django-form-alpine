@@ -1,0 +1,18 @@
+version: 2
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.12"
+
+sphinx:
+  configuration: docs/conf.py
+
+python:
+  install:
+    - requirements: docs/requirements.txt
+# Spanish translation
+# Create a second Read the Docs project pointing to the same repo and set:
+#   sphinx.configuration: docs/es/conf.py
+# Then link it as a translation of this project in the RTD dashboard
+# under Admin > Translations.
