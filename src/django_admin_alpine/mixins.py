@@ -13,6 +13,7 @@ class AdminAlpineMixin:
         return super().media + Media(
             js=(
                 Script("django_admin_alpine/js/admin.js", defer=True),
+                Script("django_admin_alpine/js/core.js", defer=True),
                 Script(alpine_js_path, defer=True),
             ),
         )

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Al instanciar esta importación en un archivo Jsdom, Vitest lo compila
 // y pasa por el plugin exposeToWindowPlugin definido en vitest.config.js
+import "../src/django_admin_alpine/static/django_admin_alpine/js/core.js";
 import "../src/django_admin_alpine/static/django_admin_alpine/js/admin.js";
 
 describe("admin.js tests with Vitest", () => {
@@ -9,10 +10,14 @@ describe("admin.js tests with Vitest", () => {
     // Restauramos el DOM base. window ya contiene las funciones reusables
     // exportadas por Vite gracias al plugin de vitest.config.js
     document.body.innerHTML = "";
+    window.DjangoFormAlpine = {};
   });
 
   describe("DOMContentLoaded initialization", () => {
-    it("should execute prepareAdminAlpineBeforeLoad automatically", () => {
+    it("should process directives automatically on DOMContentLoaded", () => {
+      window.DjangoFormAlpine = {
+        resolvers: window.djangoAdminAlpineResolvers,
+      };
       const form = document.createElement("form");
       const input = document.createElement("input");
       input.setAttribute("x-add-model-data", "dom_loaded_test");
@@ -24,6 +29,53 @@ describe("admin.js tests with Vitest", () => {
       document.dispatchEvent(event);
 
       expect(input.getAttribute("x-model")).toBe("dom_loaded_test");
+    });
+
+    it("should warn and set resolvers when DjangoFormAlpine has no resolvers", () => {
+      // window.DjangoFormAlpine = {} (set in beforeEach, no resolvers)
+      // core.js DOMContentLoaded runs first → no resolvers → console.warn (covers core.js:6-9)
+      // admin.js DOMContentLoaded runs second → no resolvers → enters if block, sets them (covers admin.js:38-43)
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      const event = document.createEvent("Event");
+      event.initEvent("DOMContentLoaded", true, true);
+      document.dispatchEvent(event);
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("DjangoFormAlpine or its resolvers not found"),
+      );
+      expect(window.DjangoFormAlpine.resolvers).toBeDefined();
+      expect(window.DjangoFormAlpine.resolvers["form-row"]).toBeDefined();
+      warnSpy.mockRestore();
+    });
+
+    it("should overwrite resolvers when useAdminResolvers is true", () => {
+      const customResolver = vi.fn();
+      window.DjangoFormAlpine = {
+        useAdminResolvers: true,
+        resolvers: { custom: customResolver },
+      };
+
+      const event = document.createEvent("Event");
+      event.initEvent("DOMContentLoaded", true, true);
+      document.dispatchEvent(event);
+
+      // Admin resolvers should be merged in (admin resolvers take priority as base)
+      expect(window.DjangoFormAlpine.resolvers["form-row"]).toBeDefined();
+      // Custom resolver is preserved (spread after admin defaults)
+      expect(window.DjangoFormAlpine.resolvers["custom"]).toBe(customResolver);
+    });
+
+    it("should initialise DjangoFormAlpine when it is undefined", () => {
+      // Covers admin.js:32 — the `|| {}` branch when window.DjangoFormAlpine is falsy
+      window.DjangoFormAlpine = undefined;
+
+      const event = document.createEvent("Event");
+      event.initEvent("DOMContentLoaded", true, true);
+      document.dispatchEvent(event);
+
+      expect(window.DjangoFormAlpine).toBeDefined();
+      expect(window.DjangoFormAlpine.resolvers["form-row"]).toBeDefined();
     });
   });
 
@@ -188,6 +240,26 @@ describe("admin.js tests with Vitest", () => {
       expect(container.getAttribute("x-model")).toBe("field");
     });
 
+    it("should replace __row_prefix__ with empty string when container has no id", () => {
+      // Covers core.js:113 — `container?.id || ""` when container exists but has no id
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("inline-related");
+      // no id set → container.id is "" (falsy) → prefix becomes ""
+
+      const el = document.createElement("input");
+      el.setAttribute("x-field-container-model", "__row_prefix__field");
+      wrapper.appendChild(el);
+
+      const container = document.createElement("div");
+      window.applyPrefixedDirectivesToContainer(
+        "field-container",
+        el,
+        container,
+      );
+
+      expect(container.getAttribute("x-model")).toBe("field");
+    });
+
     it("should replace __row_prefix__ with the ID of the closest .inline-related container", () => {
       const wrapper = document.createElement("div");
       wrapper.classList.add("inline-related");
@@ -231,7 +303,7 @@ describe("admin.js tests with Vitest", () => {
       );
     });
   });
-  describe("prepareAdminAlpineBeforeLoad", () => {
+  describe("prepareAlpineBeforeLoad", () => {
     it("should initialize x-model and update x-data in the form", () => {
       const form = document.createElement("form");
       form.setAttribute("x-data", JSON.stringify({ existing_data: "123" }));
@@ -253,7 +325,7 @@ describe("admin.js tests with Vitest", () => {
       form.appendChild(wrapper);
       document.body.appendChild(form);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       expect(input.getAttribute("x-model")).toBe("my_field");
 
@@ -275,7 +347,7 @@ describe("admin.js tests with Vitest", () => {
       form.appendChild(input);
       document.body.appendChild(form);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       expect(spy).toHaveBeenCalledWith(
         expect.stringContaining('has both "x-add-model-data" and "x-model"'),
@@ -297,7 +369,7 @@ describe("admin.js tests with Vitest", () => {
       form.appendChild(input);
       document.body.appendChild(form);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       const updatedData = JSON.parse(form.getAttribute("x-data"));
       expect(updatedData.kept_field).toBe("old-value");
@@ -312,7 +384,7 @@ describe("admin.js tests with Vitest", () => {
       fieldBox.appendChild(input);
       document.body.appendChild(fieldBox);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
       expect(fieldBox.getAttribute("x-show")).toBe("");
     });
 
@@ -331,7 +403,7 @@ describe("admin.js tests with Vitest", () => {
       formRow.appendChild(fieldBoxSubstitute);
       document.body.appendChild(formRow);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       expect(fieldBoxSubstitute.getAttribute("x-show")).toBe("");
     });
@@ -351,7 +423,7 @@ describe("admin.js tests with Vitest", () => {
       formRow.appendChild(input);
       document.body.appendChild(formRow);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       expect(label.getAttribute("x-show")).toBe("");
     });
@@ -370,7 +442,7 @@ describe("admin.js tests with Vitest", () => {
       inlineRelated.appendChild(input);
       document.body.appendChild(inlineRelated);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       expect(inlineRelated.getAttribute("x-show")).toBe("");
       expect(nonfieldErrors.getAttribute("x-show")).toBe("");
@@ -403,7 +475,7 @@ describe("admin.js tests with Vitest", () => {
       table.appendChild(tbody);
       document.body.appendChild(table);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       expect(tableRow.getAttribute("x-show")).toBe("");
       expect(nonfieldErrors.getAttribute("x-show")).toBe("");
@@ -426,7 +498,7 @@ describe("admin.js tests with Vitest", () => {
       table.appendChild(tbody);
       document.body.appendChild(table);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       expect(tableRow.getAttribute("x-show")).toBe("");
     });
@@ -440,7 +512,7 @@ describe("admin.js tests with Vitest", () => {
       form.appendChild(input);
       document.body.appendChild(form);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       expect(form.getAttribute("x-show")).toBe("");
     });
@@ -454,7 +526,7 @@ describe("admin.js tests with Vitest", () => {
       document.body.appendChild(input);
 
       expect(() => {
-        window.prepareAdminAlpineBeforeLoad();
+        window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
       }).not.toThrow();
     });
 
@@ -474,7 +546,7 @@ describe("admin.js tests with Vitest", () => {
       form.appendChild(wrapper);
       document.body.appendChild(form);
 
-      window.prepareAdminAlpineBeforeLoad();
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       const data = JSON.parse(form.getAttribute("x-data"));
       expect(data["items_1_myfield"]).toBe("hello");
@@ -488,7 +560,9 @@ describe("admin.js tests with Vitest", () => {
         .spyOn(document, "querySelectorAll")
         .mockReturnValue([input]);
 
-      expect(() => window.prepareAdminAlpineBeforeLoad()).not.toThrow();
+      expect(() =>
+        window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers),
+      ).not.toThrow();
 
       spy.mockRestore();
     });

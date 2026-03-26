@@ -3,20 +3,23 @@ import { defineConfig } from "vitest/config";
 const exposeToWindowPlugin = {
   name: "expose-to-window",
   transform(src, id) {
-    if (id.endsWith("admin.js")) {
-      // Agregamos código al final para exponer las funciones a window
-      // Esto solo ocurre en el entorno de pruebas de vitest en memoria, sin tocar el archivo real
+    if (id.endsWith("core.js")) {
       const exportCode = `
         if (typeof window !== "undefined") {
           window.applyPrefixedDirectivesToContainer = applyPrefixedDirectivesToContainer;
-          window.prepareAdminAlpineBeforeLoad = prepareAdminAlpineBeforeLoad;
+          window.prepareAlpineBeforeLoad = prepareAlpineBeforeLoad;
           window.getInitialValue = getInitialValue;
         }
       `;
-      return {
-        code: src + exportCode,
-        map: null,
-      };
+      return { code: src + exportCode, map: null };
+    }
+    if (id.endsWith("admin.js")) {
+      const exportCode = `
+        if (typeof window !== "undefined") {
+          window.djangoAdminAlpineResolvers = djangoAdminAlpineResolvers;
+        }
+      `;
+      return { code: src + exportCode, map: null };
     }
   },
 };
@@ -32,6 +35,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html"],
       include: [
+        "src/django_admin_alpine/static/django_admin_alpine/js/core.js",
         "src/django_admin_alpine/static/django_admin_alpine/js/admin.js",
       ],
     },

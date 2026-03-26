@@ -81,8 +81,11 @@ This will initialize `myFieldState` in the form's `x-data` and sync it with the 
 `django-admin-alpine` allows you to apply Alpine.js directives directly from your Django widgets to surrounding containers (form rows, fieldsets, field boxes, labels, etc.) using special prefixes:
 
 - `x-form-row-*` or `@form-row-*`: Applies `x-*` or `@*` to the closest `.form-row`.
+- `x-form-multiline-*` or `@form-multiline-*`: Applies to the closest `.form-multiline`.
+- `x-form-*` or `@form-*`: Applies to the closest `form`.
 - `x-fieldset-*` or `@fieldset-*`: Applies to the closest `fieldset`.
-- `x-field-box-*` or `@field-box-*`: Applies to the `.field-box` container.
+- `x-field-box-*` or `@field-box-*`: Applies to the `.field-box` container (or `label.parentElement` as fallback).
+- `x-field-container-*` or `@field-container-*`: Applies to the parent of the field box.
 - `x-label-*` or `@label-*`: Applies to the field's `label`.
 - `x-errorlist-*` or `@errorlist-*`: Applies to the error list container.
 - `x-help-*` or `@help-*`: Applies to the help text container.
@@ -126,6 +129,36 @@ class MyInlineForm(AdminAlpineMixin, forms.ModelForm):
 1. **Inline container ID** — if the element is inside a `.inline-related` or `tr.form-row` element, its `id` is used with dashes replaced by underscores, producing a valid JS identifier (e.g. `items_0`). So `__row_prefix__myField` becomes `items_0_myField`.
 2. **Element `name` attribute** — if no container is found, the element's `name` is parsed looking for a `prefix-number` pattern (e.g. `items-0`). The prefix is used as-is, preserving the dash.
 3. **Empty string** — if neither applies, `__row_prefix__` is simply removed.
+
+### Custom Resolvers
+
+You can extend or replace the built-in resolvers by setting `window.DjangoFormAlpine.resolvers` **before** the scripts load. Each resolver is a function that receives the input element and returns the target container (or `null`).
+
+```html
+<script>
+  window.DjangoFormAlpine = {
+    resolvers: {
+      // Add a custom prefix targeting a custom container
+      "my-container": (el) => el.closest(".my-container"),
+    },
+  };
+</script>
+```
+
+Custom resolvers are merged with the built-in ones — your keys take priority over the defaults.
+
+If you want the built-in admin resolvers to always be included (even when you supply your own), set `useAdminResolvers: true`:
+
+```html
+<script>
+  window.DjangoFormAlpine = {
+    useAdminResolvers: true,
+    resolvers: {
+      "my-container": (el) => el.closest(".my-container"),
+    },
+  };
+</script>
+```
 
 ## Contributing
 
