@@ -15,6 +15,11 @@ dependencies = [
     "Django>=3.2",
 ]
 
+[project.urls]
+#Homepage = "https://github.com/rodolvbg/django-form-alpine"
+Repository = "https://github.com/rodolvbg/django-form-alpine"
+Issues = "https://github.com/rodolvbg/django-form-alpine/issues"
+
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",
