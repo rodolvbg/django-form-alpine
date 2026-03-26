@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-form-alpine"
-version = "0.0.1"
+version = "0.0.2"
 description = "Alpine.js variables in Django Admin forms"
 authors = [
     { name = "Rodolfo Valentín Becerra García", email = "rodolvbg@gmail.com" }
