@@ -1,16 +1,16 @@
 # django-form-alpine
 
-`django-form-alpine` is a Django library that facilitates the integration of [Alpine.js](https://alpinejs.dev/) into your Django Admin forms. It provides a simple way to synchronize form states and apply Alpine.js directives to various administrative elements.
+`django-form-alpine` integrates [Alpine.js](https://alpinejs.dev/) into Django forms declaratively — you write Alpine directives directly in your widget `attrs`, and the library resolves which surrounding DOM element each directive should land on.
+
+A **Django Admin preset** is included out of the box, so you get zero-config support for all standard admin containers. You can also define your own resolvers to use the library in any Django form, outside of the admin.
 
 ## Installation
-
-You can install `django-form-alpine` using `pip`:
 
 ```bash
 pip install django-form-alpine
 ```
 
-Add `django_form_alpine` to your `INSTALLED_APPS` in `settings.py`:
+Add `django_form_alpine` to `INSTALLED_APPS`:
 
 ```python
 INSTALLED_APPS = [
@@ -20,20 +20,25 @@ INSTALLED_APPS = [
 ]
 ```
 
-## Configuration
+## How it works
 
-By default, the library includes its own Alpine.js bundle. However, you can use a custom version or a specific path by adding the following setting:
+The library has two layers:
 
-```python
-# settings.py
-django_form_alpine_JS_PATH = "path/to/your/custom-alpine.js"
-```
+- **`core.js`** — the engine. On `DOMContentLoaded` it reads `window.DjangoFormAlpine.resolvers`, iterates over all form inputs, and for each resolver it applies any matching prefixed attributes to the resolved container.
+- **`admin.js`** — the Django Admin preset. Registers built-in resolvers for all standard admin containers (`.form-row`, `fieldset`, `.field-box`, `.inline-related`, etc.) into `window.DjangoFormAlpine` unless you supply your own.
 
-## Usage
+Two mixins are provided:
 
-To use Alpine.js features in your Django Admin forms, simply inherit from `AdminAlpineMixin` in your `ModelAdmin` or `Form`.
+| Mixin              | Loads                                | Use when                                   |
+| ------------------ | ------------------------------------ | ------------------------------------------ |
+| `FormAlpineMixin`  | `core.js` + `alpine.js`              | Any Django form with custom resolvers      |
+| `AdminAlpineMixin` | `admin.js` + `core.js` + `alpine.js` | Django Admin (built-in resolvers included) |
 
-### Using the Mixin in ModelAdmin
+## Quick start
+
+### Django Admin
+
+Inherit from `AdminAlpineMixin` in your `ModelAdmin` or admin `Form`:
 
 ```python
 from django.contrib import admin
@@ -42,30 +47,32 @@ from .models import MyModel
 
 @admin.register(MyModel)
 class MyModelAdmin(AdminAlpineMixin, admin.ModelAdmin):
-    # Your ModelAdmin configuration
     pass
 ```
 
-### Using the Mixin in Forms
+That's it — the admin preset resolvers are loaded automatically.
+
+### Any Django form
+
+Use `FormAlpineMixin` and define your own resolvers (see [Custom resolvers](#custom-resolvers)):
 
 ```python
 from django import forms
-from django_form_alpine import AdminAlpineMixin
+from django_form_alpine import FormAlpineMixin
 
-class MyForm(AdminAlpineMixin, forms.ModelForm):
-    # Your Form configuration
-    # This ensures that Alpine.js and the helper script are included in the form's media
-    pass
+class MyForm(FormAlpineMixin, forms.ModelForm):
+    class Meta:
+        model = MyModel
+        fields = "__all__"
 ```
 
 ## Features
 
-### Synchronizing State with `x-add-model-data`
+### Synchronize state with `x-add-model-data`
 
-You can automatically add an input's value to the form's Alpine.js `x-data` state by adding the `x-add-model-data` attribute:
+Add `x-add-model-data` to a widget to automatically register the field in the form's `x-data` and bind it with `x-model`:
 
 ```python
-# In your Form
 class MyForm(forms.ModelForm):
     my_field = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -74,48 +81,51 @@ class MyForm(forms.ModelForm):
     )
 ```
 
-This will initialize `myFieldState` in the form's `x-data` and sync it with the input using `x-model`.
+This initializes `myFieldState` in the closest `form[x-data]` and sets `x-model="myFieldState"` on the input.
 
-### Prefixed Attributes for Targeted Directives
+### Prefixed directives
 
-`django-form-alpine` allows you to apply Alpine.js directives directly from your Django widgets to surrounding containers (form rows, fieldsets, field boxes, labels, etc.) using special prefixes:
+Apply Alpine.js directives to surrounding containers directly from widget `attrs` using the `x-<resolver>-<directive>` (or `@<resolver>-<directive>`) pattern.
 
-- `x-form-row-*` or `@form-row-*`: Applies `x-*` or `@*` to the closest `.form-row`.
-- `x-form-multiline-*` or `@form-multiline-*`: Applies to the closest `.form-multiline`.
-- `x-form-*` or `@form-*`: Applies to the closest `form`.
-- `x-fieldset-*` or `@fieldset-*`: Applies to the closest `fieldset`.
-- `x-field-box-*` or `@field-box-*`: Applies to the `.field-box` container (or `label.parentElement` as fallback).
-- `x-field-container-*` or `@field-container-*`: Applies to the parent of the field box.
-- `x-label-*` or `@label-*`: Applies to the field's `label`.
-- `x-errorlist-*` or `@errorlist-*`: Applies to the error list container.
-- `x-help-*` or `@help-*`: Applies to the help text container.
-- `x-inline-container-*` or `@inline-container-*`: Applies to the inline container (`.inline-related` or `tr.form-row`).
-- `x-nonfield-errorlist-*` or `@nonfield-errorlist-*`: Applies to non-field error list containers in inlines.
-- `x-option-label-*` or `@option-label-*`: Applies to the closest `label` of the element (useful for radio or checkbox labels).
+#### Django Admin preset resolvers
 
-#### Example: Show/Hide a form row based on another field
+| Prefix               | Target container                                                                    |
+| -------------------- | ----------------------------------------------------------------------------------- |
+| `form-row`           | Closest `.form-row`                                                                 |
+| `form-multiline`     | Closest `.form-multiline`                                                           |
+| `form`               | Closest `form`                                                                      |
+| `fieldset`           | Closest `fieldset`                                                                  |
+| `field-box`          | Closest `.field-box` (falls back to `label.parentElement`, then `el.parentElement`) |
+| `field-container`    | Parent of the field box                                                             |
+| `label`              | Field's `label` (inside `.flex-container` or `.form-row`)                           |
+| `errorlist`          | `.errorlist` inside the field container                                             |
+| `help`               | `.help` inside the field container                                                  |
+| `inline-container`   | `tr.form-row` or `.inline-related`                                                  |
+| `nonfield-errorlist` | `.errorlist.nonfield` in tabular or stacked inlines                                 |
+| `option-label`       | Closest `label` (for checkboxes and radios)                                         |
+
+#### Example: show/hide a form row
 
 ```python
-# In your Form
 class MyForm(forms.ModelForm):
     toggle = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={
-            "x-add-model-data": "showExtraField"
+            "x-add-model-data": "showExtra"
         })
     )
     extra_field = forms.CharField(
         widget=forms.TextInput(attrs={
-            "x-form-row-show": "showExtraField"
+            "x-form-row-show": "showExtra"
         })
     )
 ```
 
-### Handling Inlines with `__row_prefix__`
+### Inline forms with `__row_prefix__`
 
-When working with Django's inline forms, use the `__row_prefix__` placeholder to correctly namespace fields within the same inline instance:
+Use `__row_prefix__` to namespace Alpine state keys per inline row, so each row has its own independent state:
 
 ```python
-class MyInlineForm(AdminAlpineMixin, forms.ModelForm):
+class MyInlineForm(AdminAlpineMixin, forms.ModelForm):  # or FormAlpineMixin with custom resolvers
     my_field = forms.CharField(
         widget=forms.TextInput(attrs={
             "x-add-model-data": "__row_prefix__myField",
@@ -124,40 +134,50 @@ class MyInlineForm(AdminAlpineMixin, forms.ModelForm):
     )
 ```
 
-`__row_prefix__` is resolved at runtime using the following order:
+`__row_prefix__` is resolved at runtime in this order:
 
-1. **Inline container ID** — if the element is inside a `.inline-related` or `tr.form-row` element, its `id` is used with dashes replaced by underscores, producing a valid JS identifier (e.g. `items_0`). So `__row_prefix__myField` becomes `items_0_myField`.
-2. **Element `name` attribute** — if no container is found, the element's `name` is parsed looking for a `prefix-number` pattern (e.g. `items-0`). The prefix is used as-is, preserving the dash.
-3. **Empty string** — if neither applies, `__row_prefix__` is simply removed.
+1. **Container ID** — ID of the closest `tr.form-row` or `.inline-related`, with dashes replaced by underscores (e.g. `items_0`). So `__row_prefix__myField` → `items_0_myField`.
+2. **Element `name`** — parsed with a `prefix-number` pattern (e.g. `items-0`). The prefix is used as-is, preserving the dash.
+3. **Empty string** — `__row_prefix__` is simply removed if neither applies.
 
-### Custom Resolvers
+## Custom resolvers
 
-You can extend or replace the built-in resolvers by setting `window.DjangoFormAlpine.resolvers` **before** the scripts load. Each resolver is a function that receives the input element and returns the target container (or `null`).
+Use `FormAlpineMixin` and define your resolvers in a `<script>` tag **before** the form's scripts load:
 
 ```html
 <script>
   window.DjangoFormAlpine = {
     resolvers: {
-      // Add a custom prefix targeting a custom container
-      "my-container": (el) => el.closest(".my-container"),
+      "my-section": (el) => el.closest(".my-section"),
+      "my-label": (el) => el.closest(".my-label"),
     },
   };
 </script>
 ```
 
-Custom resolvers are merged with the built-in ones — your keys take priority over the defaults.
+Each resolver is a function `(el) => HTMLElement | null` where `el` is the form input element.
 
-If you want the built-in admin resolvers to always be included (even when you supply your own), set `useAdminResolvers: true`:
+When you provide your own resolvers, the admin preset is **not** loaded. If you want both, set `useAdminResolvers: true`:
 
 ```html
 <script>
   window.DjangoFormAlpine = {
     useAdminResolvers: true,
     resolvers: {
-      "my-container": (el) => el.closest(".my-container"),
+      // Your custom resolver — merged on top of the admin ones
+      "my-section": (el) => el.closest(".my-section"),
     },
   };
 </script>
+```
+
+## Configuration
+
+To use a custom Alpine.js bundle instead of the one included with the package:
+
+```python
+# settings.py
+django_form_alpine_JS_PATH = "path/to/your/custom-alpine.js"
 ```
 
 ## Contributing

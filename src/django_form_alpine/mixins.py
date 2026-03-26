@@ -2,7 +2,7 @@ from django.conf import settings
 from django.forms import Media, Script
 
 
-class AdminAlpineMixin:
+class FormAlpineMixin:
     @property
     def media(self):
         alpine_js_path = getattr(
@@ -12,8 +12,15 @@ class AdminAlpineMixin:
         )
         return super().media + Media(
             js=(
-                Script("django_form_alpine/js/admin.js", defer=True),
                 Script("django_form_alpine/js/core.js", defer=True),
                 Script(alpine_js_path, defer=True),
             ),
+        )
+
+
+class AdminAlpineMixin(FormAlpineMixin):
+    @property
+    def media(self):
+        return (
+            Media(Script("django_form_alpine/js/admin.js", defer=True)) + super().media
         )
