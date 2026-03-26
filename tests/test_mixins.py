@@ -1,7 +1,7 @@
 from django.forms import Media
 from django.test import SimpleTestCase, override_settings
 
-from django_form_alpine import AdminAlpineMixin
+from django_form_alpine import AdminAlpineMixin, FormAlpineMixin
 
 
 class MockBase:
@@ -10,8 +10,25 @@ class MockBase:
         return Media(js=["base.js"])
 
 
+class MockFormWithMixin(FormAlpineMixin, MockBase):
+    pass
+
+
 class MockAdminWithMixin(AdminAlpineMixin, MockBase):
     pass
+
+
+class FormAlpineMixinTest(SimpleTestCase):
+    def test_media_includes_alpine_js(self):
+        """
+        Verify that FormAlpineMixin adds alpine.js to the media.
+        """
+        instance = MockFormWithMixin()
+        media_js = str(instance.media)
+        self.assertIn("django_form_alpine/js/alpine.js", media_js)
+        alpine_js = 'src="/static/django_form_alpine/js/alpine.js"'
+        self.assertIn(alpine_js, media_js)
+        self.assertIn("defer", media_js)
 
 
 class AdminAlpineMixinTest(SimpleTestCase):
