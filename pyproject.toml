@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.urls]
-#Homepage = "https://github.com/rodolvbg/django-form-alpine"
+Homepage = "https://django-form-alpine.readthedocs.io/en/latest/"
 Repository = "https://github.com/rodolvbg/django-form-alpine"
 Issues = "https://github.com/rodolvbg/django-form-alpine/issues"
 
