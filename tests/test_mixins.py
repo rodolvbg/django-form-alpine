@@ -1,7 +1,7 @@
 from django.forms import Media
 from django.test import SimpleTestCase, override_settings
 
-from django_admin_alpine import AdminAlpineMixin
+from django_form_alpine import AdminAlpineMixin
 
 
 class MockBase:
@@ -22,9 +22,9 @@ class AdminAlpineMixinTest(SimpleTestCase):
         instance = MockAdminWithMixin()
         media_js = str(instance.media)
 
-        self.assertIn("django_admin_alpine/js/admin.js", media_js)
-        self.assertIn("django_admin_alpine/js/alpine.js", media_js)
-        admin_js = 'src="/static/django_admin_alpine/js/admin.js"'
+        self.assertIn("django_form_alpine/js/admin.js", media_js)
+        self.assertIn("django_form_alpine/js/alpine.js", media_js)
+        admin_js = 'src="/static/django_form_alpine/js/admin.js"'
         self.assertIn(admin_js, media_js)
         self.assertIn("defer", media_js)
 
@@ -36,12 +36,12 @@ class AdminAlpineMixinTest(SimpleTestCase):
         media_js = str(instance.media)
         self.assertIn("base.js", media_js)
 
-    @override_settings(DJANGO_ADMIN_ALPINE_JS_PATH="custom/alpine.js")
+    @override_settings(django_form_alpine_JS_PATH="custom/alpine.js")
     def test_custom_alpine_js_path(self):
         """
-        Verify that DJANGO_ADMIN_ALPINE_JS_PATH setting is respected.
+        Verify that django_form_alpine_JS_PATH setting is respected.
         """
         instance = MockAdminWithMixin()
         media_js = str(instance.media)
         self.assertIn("custom/alpine.js", media_js)
-        self.assertNotIn("django_admin_alpine/js/alpine.js", media_js)
+        self.assertNotIn("django_form_alpine/js/alpine.js", media_js)

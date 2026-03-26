@@ -1,1 +1,1 @@
-recursive-include src/django_admin_alpine/static *
+recursive-include src/django_form_alpine/static *

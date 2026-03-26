@@ -1,6 +1,6 @@
 from django import forms
 
-from django_admin_alpine import AdminAlpineMixin
+from django_form_alpine import AdminAlpineMixin
 
 from .models import ChildModelStacked, ChildModelTabular, ParentModel
 

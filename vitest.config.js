@@ -29,14 +29,14 @@ export default defineConfig({
     environment: "jsdom",
     exclude: [
       "node_modules",
-      "src/django_admin_alpine/static/django_admin_alpine/js/alpine.js",
+      "src/django_form_alpine/static/django_form_alpine/js/alpine.js",
     ],
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
       include: [
-        "src/django_admin_alpine/static/django_admin_alpine/js/core.js",
-        "src/django_admin_alpine/static/django_admin_alpine/js/admin.js",
+        "src/django_form_alpine/static/django_form_alpine/js/core.js",
+        "src/django_form_alpine/static/django_form_alpine/js/admin.js",
       ],
     },
   },

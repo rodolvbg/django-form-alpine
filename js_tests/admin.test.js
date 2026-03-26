@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Al instanciar esta importación en un archivo Jsdom, Vitest lo compila
 // y pasa por el plugin exposeToWindowPlugin definido en vitest.config.js
-import "../src/django_admin_alpine/static/django_admin_alpine/js/core.js";
-import "../src/django_admin_alpine/static/django_admin_alpine/js/admin.js";
+import "../src/django_form_alpine/static/django_form_alpine/js/core.js";
+import "../src/django_form_alpine/static/django_form_alpine/js/admin.js";
 
 describe("admin.js tests with Vitest", () => {
   beforeEach(() => {

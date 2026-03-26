@@ -1,21 +1,21 @@
-# django-admin-alpine
+# django-form-alpine
 
-`django-admin-alpine` is a Django library that facilitates the integration of [Alpine.js](https://alpinejs.dev/) into your Django Admin forms. It provides a simple way to synchronize form states and apply Alpine.js directives to various administrative elements.
+`django-form-alpine` is a Django library that facilitates the integration of [Alpine.js](https://alpinejs.dev/) into your Django Admin forms. It provides a simple way to synchronize form states and apply Alpine.js directives to various administrative elements.
 
 ## Installation
 
-You can install `django-admin-alpine` using `pip`:
+You can install `django-form-alpine` using `pip`:
 
 ```bash
-pip install django-admin-alpine
+pip install django-form-alpine
 ```
 
-Add `django_admin_alpine` to your `INSTALLED_APPS` in `settings.py`:
+Add `django_form_alpine` to your `INSTALLED_APPS` in `settings.py`:
 
 ```python
 INSTALLED_APPS = [
     # ...
-    "django_admin_alpine",
+    "django_form_alpine",
     # ...
 ]
 ```
@@ -26,7 +26,7 @@ By default, the library includes its own Alpine.js bundle. However, you can use 
 
 ```python
 # settings.py
-DJANGO_ADMIN_ALPINE_JS_PATH = "path/to/your/custom-alpine.js"
+django_form_alpine_JS_PATH = "path/to/your/custom-alpine.js"
 ```
 
 ## Usage
@@ -37,7 +37,7 @@ To use Alpine.js features in your Django Admin forms, simply inherit from `Admin
 
 ```python
 from django.contrib import admin
-from django_admin_alpine import AdminAlpineMixin
+from django_form_alpine import AdminAlpineMixin
 from .models import MyModel
 
 @admin.register(MyModel)
@@ -50,7 +50,7 @@ class MyModelAdmin(AdminAlpineMixin, admin.ModelAdmin):
 
 ```python
 from django import forms
-from django_admin_alpine import AdminAlpineMixin
+from django_form_alpine import AdminAlpineMixin
 
 class MyForm(AdminAlpineMixin, forms.ModelForm):
     # Your Form configuration
@@ -78,7 +78,7 @@ This will initialize `myFieldState` in the form's `x-data` and sync it with the 
 
 ### Prefixed Attributes for Targeted Directives
 
-`django-admin-alpine` allows you to apply Alpine.js directives directly from your Django widgets to surrounding containers (form rows, fieldsets, field boxes, labels, etc.) using special prefixes:
+`django-form-alpine` allows you to apply Alpine.js directives directly from your Django widgets to surrounding containers (form rows, fieldsets, field boxes, labels, etc.) using special prefixes:
 
 - `x-form-row-*` or `@form-row-*`: Applies `x-*` or `@*` to the closest `.form-row`.
 - `x-form-multiline-*` or `@form-multiline-*`: Applies to the closest `.form-multiline`.

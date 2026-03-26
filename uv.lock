@@ -244,7 +244,7 @@ wheels = [
 ]
 
 [[package]]
-name = "django-admin-alpine"
+name = "django-form-alpine"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
