@@ -180,6 +180,10 @@ To use a custom Alpine.js bundle instead of the one included with the package:
 django_form_alpine_JS_PATH = "path/to/your/custom-alpine.js"
 ```
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for full release notes.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
