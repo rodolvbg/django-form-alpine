@@ -97,11 +97,10 @@ function getInitialValue(el) {
 /**
  * Returns the row prefix used to namespace Alpine.js state keys for inline forms.
  * Resolution order:
- *  1. Closest "tr.form-row" or ".inline-related" container — its ID with dashes
- *     replaced by underscores, producing a valid JS identifier (e.g. "items_0").
- *  2. element.name parsed with the pattern /prefix-number/ — returned as-is with
- *     the original dash (e.g. "items-0"). Note: this form may not be a valid JS
- *     identifier in Alpine expressions.
+ *  1. Closest "tr.form-row" or ".inline-related" container — its ID as-is
+ *     (e.g. "items-0"), matching Django's own inline field naming convention.
+ *  2. element.name parsed with the pattern /prefix-number/ — returned as-is
+ *     (e.g. "items-0").
  *  3. Empty string if neither source yields a match.
  * @param {HTMLElement} element - The element to resolve the prefix for.
  * @returns {string} The row prefix string, or "" if none can be determined.
@@ -110,15 +109,13 @@ function getRowPrefix(element) {
   const container =
     element.closest("tr.form-row") || element.closest(".inline-related");
   if (container) {
-    return (container?.id || "").replaceAll("-", "_");
+    return container?.id || "";
   }
   const regex = /^([a-zA-Z0-9_-]+)-(\d+)$/;
   const match = element?.name?.match(regex);
 
   if (match) {
-    const prefix = match[1];
-    const index = match[2];
-    return `${prefix}-${index}`;
+    return `${match[1]}-${match[2]}`;
   }
   return "";
 }
@@ -126,8 +123,9 @@ function getRowPrefix(element) {
 /**
  * Processes a string to replace the special placeholder __row_prefix__
  * with the prefix returned by getRowPrefix for the given element.
- * A trailing underscore separator is appended when the prefix is non-empty,
- * so "__row_prefix__field" becomes e.g. "items_0_field".
+ * A trailing dash separator is appended when the prefix is non-empty,
+ * so "__row_prefix__field" becomes e.g. "items-0-field" (Django's inline
+ * field naming convention: <prefix>-<number>-<field>).
  * @param {HTMLElement} element - The element to resolve the prefix for.
  * @param {string} value - The string to process.
  * @returns {string} The processed string with all __row_prefix__ occurrences replaced.
@@ -136,10 +134,10 @@ function handleInlinePrefix(element, value) {
   const inlinePrefix = "__row_prefix__";
   if (typeof value === "string" && value.includes(inlinePrefix)) {
     const prefixValue = getRowPrefix(element);
-    if (prefixValue && !value.startsWith(inlinePrefix + "_")) {
-      return value.replaceAll(inlinePrefix, prefixValue + "_");
+    if (prefixValue) {
+      return value.replaceAll(inlinePrefix, prefixValue + "-");
     }
-    return value.replaceAll(inlinePrefix, prefixValue);
+    return value.replaceAll(inlinePrefix, "");
   }
   return value;
 }

@@ -2,6 +2,8 @@
 
 Cuando se usan formularios inline de Django, cada fila es una instancia de formulario independiente. Usa el marcador `__row_prefix__` para espaciar las claves de estado de Alpine por fila, de modo que cada una gestione su propio estado de forma independiente.
 
+`__row_prefix__` sigue la convención de nombres de campos inline de Django: `<prefix>-<number>-<field>`.
+
 ## Uso
 
 ```python
@@ -14,19 +16,17 @@ class MyInlineForm(AdminAlpineMixin, forms.ModelForm):  # o FormAlpineMixin con 
     )
 ```
 
-En tiempo de ejecución, `__row_prefix__` se reemplaza por un identificador único para cada fila, generando claves como `items_0_myField`, `items_1_myField`, etc.
+En tiempo de ejecución, `__row_prefix__` se reemplaza con el identificador de fila de Django, generando claves como `items-0-myField`, `items-1-myField`, etc. — coincidiendo con los nombres que Django usa para los campos del formulario inline.
 
 ## Orden de resolución
 
-`__row_prefix__` se resuelve con la siguiente prioridad:
+1. **ID del contenedor** — si el input está dentro de un elemento `tr.form-row` o `.inline-related`, se usa el `id` de ese elemento tal cual.
 
-1. **ID del contenedor** — si el input está dentro de un elemento `tr.form-row` o `.inline-related`, se usa el `id` de ese elemento con los guiones reemplazados por guiones bajos.
+   Ejemplo: id del contenedor `items-0` → `__row_prefix__myField` → `items-0-myField`.
 
-   Ejemplo: id del contenedor `items-0` → prefijo `items_0` → `items_0_myField`.
+2. **Atributo `name` del elemento** — si no se encuentra un contenedor, el `name` del input se parsea con el patrón `prefix-number` (p.ej. `items-0-title` → prefijo `items-0`).
 
-2. **Atributo `name` del elemento** — si no se encuentra un contenedor, se parsea el `name` del input con el patrón `prefijo-número` (p.ej. `items-0`). El prefijo se usa tal cual, conservando el guión.
-
-   Ejemplo: `name="items-0-my_field"` → prefijo `items-0` → `items-0_myField`.
+   Ejemplo: `name="items-0-my_field"` → `__row_prefix__myField` → `items-0-myField`.
 
 3. **Cadena vacía** — si ninguna fuente coincide, `__row_prefix__` simplemente se elimina.
 
@@ -40,5 +40,5 @@ Todas las ocurrencias de `__row_prefix__` en el valor de un atributo se reemplaz
 attrs={
     "x-form-row-show": "__row_prefix__fieldA && __row_prefix__fieldB !== ''",
 }
-# → x-show="items_0_fieldA && items_0_fieldB !== ''"
+# → x-show="items-0-fieldA && items-0-fieldB !== ''"
 ```

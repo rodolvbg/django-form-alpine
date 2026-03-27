@@ -222,8 +222,8 @@ describe("admin.js tests with Vitest", () => {
         container,
       );
 
-      // Fallback: name "items-0" matches /prefix-number/, returned as-is → "items-0_field"
-      expect(container.getAttribute("x-model")).toBe("items-0_field");
+      // Fallback: name "items-0" matches /prefix-number/ → "items-0-field"
+      expect(container.getAttribute("x-model")).toBe("items-0-field");
     });
 
     it("should replace __row_prefix__ with empty string if no .inline-related container is found", () => {
@@ -276,7 +276,7 @@ describe("admin.js tests with Vitest", () => {
         container,
       );
 
-      expect(container.getAttribute("x-model")).toBe("items_0_otherField");
+      expect(container.getAttribute("x-model")).toBe("items-0-otherField");
     });
 
     it("should replace multiple occurrences of __row_prefix__ using the container ID", () => {
@@ -299,7 +299,7 @@ describe("admin.js tests with Vitest", () => {
       );
 
       expect(container.getAttribute("x-show")).toBe(
-        "form_2_field1 && form_2_field2 !== ''",
+        "form-2-field1 && form-2-field2 !== ''",
       );
     });
   });
@@ -549,8 +549,8 @@ describe("admin.js tests with Vitest", () => {
       window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       const data = JSON.parse(form.getAttribute("x-data"));
-      expect(data["items_1_myfield"]).toBe("hello");
-      expect(input.getAttribute("x-model")).toBe("items_1_myfield");
+      expect(data["items-1-myfield"]).toBe("hello");
+      expect(input.getAttribute("x-model")).toBe("items-1-myfield");
     });
 
     it("should handle elements without parents gracefully (coverage for line 35 null branch)", () => {

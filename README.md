@@ -134,10 +134,10 @@ class MyInlineForm(AdminAlpineMixin, forms.ModelForm):  # or FormAlpineMixin wit
     )
 ```
 
-`__row_prefix__` is resolved at runtime in this order:
+`__row_prefix__` is resolved following Django's inline field naming convention (`<prefix>-<number>-<field>`):
 
-1. **Container ID** — ID of the closest `tr.form-row` or `.inline-related`, with dashes replaced by underscores (e.g. `items_0`). So `__row_prefix__myField` → `items_0_myField`.
-2. **Element `name`** — parsed with a `prefix-number` pattern (e.g. `items-0`). The prefix is used as-is, preserving the dash.
+1. **Container ID** — ID of the closest `tr.form-row` or `.inline-related`, used as-is (e.g. `items-0`). So `__row_prefix__myField` → `items-0-myField`.
+2. **Element `name`** — parsed with a `prefix-number` pattern (e.g. `items-0-title` → prefix `items-0`).
 3. **Empty string** — `__row_prefix__` is simply removed if neither applies.
 
 ## Custom resolvers
