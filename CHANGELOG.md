@@ -4,6 +4,7 @@
 
 ### Added
 
+- **`td` Django Admin preset resolver** — targets the closest `<td>`, useful for applying directives to individual cells in tabular formsets (`x-td-<directive>`).
 - **`self` built-in resolver** — always available regardless of which mixin or custom resolvers are configured. Use `x-self-<directive>` to apply Alpine directives directly to the input element itself, which is especially useful in formsets where no surrounding container is needed.
 
 ### Changed

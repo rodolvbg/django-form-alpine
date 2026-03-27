@@ -18,6 +18,7 @@
 | `inline-container`   | `tr.form-row` or `.inline-related`                                                  |
 | `nonfield-errorlist` | `.errorlist.nonfield` in tabular or stacked inlines                                 |
 | `option-label`       | Closest `label` (for checkboxes and radios)                                         |
+| `td`                 | Closest `td` (for tabular formset cells)                                            |
 
 ## Examples
 

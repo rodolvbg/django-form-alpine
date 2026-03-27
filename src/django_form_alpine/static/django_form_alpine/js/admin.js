@@ -27,6 +27,7 @@ const djangoAdminAlpineResolvers = {
   help: (el) => getFieldContainer(el)?.querySelector(".help") || null,
 
   "option-label": (el) => el.closest("label"),
+  td: (el) => el.closest("td"),
 };
 function prepareAdminAlpineBeforeLoad() {
   window.DjangoFormAlpine = window.DjangoFormAlpine || {};

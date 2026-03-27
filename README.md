@@ -121,6 +121,7 @@ my_field = forms.CharField(
 | `inline-container`   | `tr.form-row` or `.inline-related`                                                  |
 | `nonfield-errorlist` | `.errorlist.nonfield` in tabular or stacked inlines                                 |
 | `option-label`       | Closest `label` (for checkboxes and radios)                                         |
+| `td`                 | Closest `td` (for tabular formset cells)                                            |
 
 #### Example: show/hide a form row
 

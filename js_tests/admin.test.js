@@ -591,5 +591,18 @@ describe("admin.js tests with Vitest", () => {
 
       spy.mockRestore();
     });
+
+    it("should apply x-td-* directives to the closest td (tabular formset cell)", () => {
+      const td = document.createElement("td");
+      const input = document.createElement("input");
+      input.type = "text";
+      input.setAttribute("x-td-show", "isVisible");
+      td.appendChild(input);
+      document.body.appendChild(td);
+
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
+
+      expect(td.getAttribute("x-show")).toBe("isVisible");
+    });
   });
 });
