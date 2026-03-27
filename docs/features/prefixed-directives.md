@@ -49,4 +49,24 @@ This sets `@click="doSomething()"` on the closest `.form-row`.
 
 ## Available resolvers
 
-See [Django Admin preset resolvers](../resolvers/admin-preset.md) for the full list of built-in prefixes, or [Custom resolvers](../resolvers/custom.md) to define your own.
+### Built-in resolvers
+
+Always available regardless of which mixin or resolvers you use:
+
+| Prefix | Target                   |
+| ------ | ------------------------ |
+| `self` | The input element itself |
+
+Use `self` when you want to apply a directive directly to the input rather than a surrounding container — useful in formsets or anywhere no parent container is needed:
+
+```python
+my_field = forms.CharField(
+    widget=forms.TextInput(attrs={
+        "x-self-show": "isVisible",
+    })
+)
+```
+
+### Django Admin preset resolvers
+
+See [Django Admin preset resolvers](../resolvers/admin-preset.md) for the full list, or [Custom resolvers](../resolvers/custom.md) to define your own.

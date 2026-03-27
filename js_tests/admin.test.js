@@ -303,6 +303,31 @@ describe("admin.js tests with Vitest", () => {
       );
     });
   });
+  describe("built-in self resolver", () => {
+    it("should apply x-self-* directives to the element itself", () => {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.setAttribute("x-self-show", "someCondition");
+      input.setAttribute("x-self-disabled", "");
+      document.body.appendChild(input);
+
+      window.prepareAlpineBeforeLoad({});
+
+      expect(input.getAttribute("x-show")).toBe("someCondition");
+      expect(input.getAttribute("x-disabled")).toBe("");
+    });
+
+    it("self resolver is available even when no resolvers are passed", () => {
+      const input = document.createElement("input");
+      input.setAttribute("x-self-class", "highlight");
+      document.body.appendChild(input);
+
+      window.prepareAlpineBeforeLoad({});
+
+      expect(input.getAttribute("x-class")).toBe("highlight");
+    });
+  });
+
   describe("prepareAlpineBeforeLoad", () => {
     it("should initialize x-model and update x-data in the form", () => {
       const form = document.createElement("form");

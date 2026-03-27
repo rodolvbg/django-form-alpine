@@ -49,4 +49,24 @@ Esto establece `@click="doSomething()"` en el `.form-row` más cercano.
 
 ## Resolvers disponibles
 
-Consulta [Resolvers del preset de Admin](../resolvers/admin-preset.md) para la lista completa de prefijos predefinidos, o [Resolvers personalizados](../resolvers/custom.md) para definir los tuyos.
+### Resolvers integrados
+
+Siempre disponibles independientemente del mixin o resolvers que uses:
+
+| Prefijo | Objetivo                 |
+| ------- | ------------------------ |
+| `self`  | El propio elemento input |
+
+Usa `self` cuando quieras aplicar una directiva directamente al input en lugar de a un contenedor circundante — útil en formsets o donde no se necesita un contenedor padre:
+
+```python
+my_field = forms.CharField(
+    widget=forms.TextInput(attrs={
+        "x-self-show": "isVisible",
+    })
+)
+```
+
+### Resolvers del preset de Admin de Django
+
+Consulta [Resolvers del preset de Admin](../resolvers/admin-preset.md) para la lista completa, o [Resolvers personalizados](../resolvers/custom.md) para definir los tuyos.

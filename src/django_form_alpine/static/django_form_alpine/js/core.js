@@ -9,11 +9,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+/**
+ * Built-in resolvers always available regardless of which preset or custom
+ * resolvers are configured. User-defined resolvers can override these keys.
+ *  - self: returns the element itself, useful for applying directives directly
+ *    to the input (e.g. in formsets where no surrounding container is needed).
+ */
+const builtinResolvers = {
+  self: (el) => el,
+};
+
 function prepareAlpineBeforeLoad(resolvers) {
+  const merged = { ...builtinResolvers, ...resolvers };
   document.querySelectorAll("input, select, textarea").forEach((el) => {
     addModelData(el);
 
-    Object.entries(resolvers).forEach(([prefix, resolver]) => {
+    Object.entries(merged).forEach(([prefix, resolver]) => {
       applyPrefixedDirectivesToContainer(prefix, el, resolver(el));
     });
   });

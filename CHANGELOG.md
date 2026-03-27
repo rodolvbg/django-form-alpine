@@ -2,6 +2,10 @@
 
 ## [0.0.3] - 2026-03-27
 
+### Added
+
+- **`self` built-in resolver** — always available regardless of which mixin or custom resolvers are configured. Use `x-self-<directive>` to apply Alpine directives directly to the input element itself, which is especially useful in formsets where no surrounding container is needed.
+
 ### Changed
 
 - **`__row_prefix__` now follows Django's inline field naming convention** (`<prefix>-<number>-<field>`). Previously the container ID was converted to underscores (e.g. `items_0_field`); it is now used as-is (e.g. `items-0-field`), matching the names Django generates for inline form fields.

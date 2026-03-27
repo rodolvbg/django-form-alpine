@@ -87,6 +87,24 @@ This initializes `myFieldState` in the closest `form[x-data]` and sets `x-model=
 
 Apply Alpine.js directives to surrounding containers directly from widget `attrs` using the `x-<resolver>-<directive>` (or `@<resolver>-<directive>`) pattern.
 
+#### Built-in resolvers
+
+Always available regardless of which mixin or resolvers you use:
+
+| Prefix | Target                   |
+| ------ | ------------------------ |
+| `self` | The input element itself |
+
+Useful in formsets or any case where you want to apply a directive directly to the input rather than a surrounding container:
+
+```python
+my_field = forms.CharField(
+    widget=forms.TextInput(attrs={
+        "x-self-show": "isVisible",
+    })
+)
+```
+
 #### Django Admin preset resolvers
 
 | Prefix               | Target container                                                                    |
