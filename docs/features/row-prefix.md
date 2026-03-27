@@ -4,6 +4,8 @@ When using Django inline forms, each row is an independent form instance. Use th
 
 `__row_prefix__` follows Django's own inline field naming convention: `<prefix>-<number>-<field>`.
 
+Dynamically added rows (via the "Add another" button) are handled automatically — `core.js` listens for the `formset:added` event and processes each new row the same way as on initial load.
+
 ## Usage
 
 ```python

@@ -19,9 +19,15 @@ const builtinResolvers = {
   self: (el) => el,
 };
 
-function prepareAlpineBeforeLoad(resolvers) {
+/**
+ * Queries all form inputs within a container and applies Alpine.js directives
+ * to each one, skipping Django empty form template elements (__prefix__).
+ * @param {Document|HTMLElement} container - The root to search for inputs.
+ * @param {Object} resolvers - Map of prefix → resolver function.
+ */
+function processFormElements(container, resolvers) {
   const merged = { ...builtinResolvers, ...resolvers };
-  document.querySelectorAll("input, select, textarea").forEach((el) => {
+  container.querySelectorAll("input, select, textarea").forEach((el) => {
     if (el.name?.includes("__prefix__") || el.id?.includes("__prefix__")) {
       return;
     }
@@ -31,6 +37,22 @@ function prepareAlpineBeforeLoad(resolvers) {
     Object.entries(merged).forEach(([prefix, resolver]) => {
       applyPrefixedDirectivesToContainer(prefix, el, resolver(el));
     });
+  });
+}
+
+/**
+ * Processes all existing form inputs on the page and registers a listener for
+ * dynamically added inline rows (Django Admin's "formset:added" event).
+ * @param {Object} resolvers - Map of prefix → resolver function.
+ */
+function prepareAlpineBeforeLoad(resolvers) {
+  processFormElements(document, resolvers);
+
+  document.addEventListener("formset:added", (event) => {
+    processFormElements(event.target, resolvers);
+    if (window.Alpine) {
+      window.Alpine.initTree(event.target);
+    }
   });
 }
 
@@ -79,8 +101,14 @@ function addModelData(el) {
     if (!form) return;
     const data = JSON.parse(form.getAttribute("x-data") || "{}");
     if (!(xModel in data)) {
-      data[xModel] = getInitialValue(el);
+      const initialValue = getInitialValue(el);
+      data[xModel] = initialValue;
       form.setAttribute("x-data", JSON.stringify(data));
+      // If Alpine has already initialised this form, also update the live
+      // reactive state so the new key is immediately available to x-model.
+      if (form._x_dataStack?.[0] && !(xModel in form._x_dataStack[0])) {
+        form._x_dataStack[0][xModel] = initialValue;
+      }
     }
     if (xModelExisting) {
       console.warn(
@@ -138,9 +166,8 @@ function getRowPrefix(element) {
 /**
  * Processes a string to replace the special placeholder __row_prefix__
  * with the prefix returned by getRowPrefix for the given element.
- * A trailing dash separator is appended when the prefix is non-empty,
- * so "__row_prefix__field" becomes e.g. "items-0-field" (Django's inline
- * field naming convention: <prefix>-<number>-<field>).
+ * Hyphens in the prefix are converted to underscores so the result is a
+ * valid JavaScript identifier for Alpine.js (e.g. "items_0_field").
  * @param {HTMLElement} element - The element to resolve the prefix for.
  * @param {string} value - The string to process.
  * @returns {string} The processed string with all __row_prefix__ occurrences replaced.

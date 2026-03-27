@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.4] - 2026-03-27
+
+### Added
+
+- **Dynamic inline rows supported** — `core.js` now listens for the `formset:added` event that Django Admin dispatches when a new inline row is added. The new row's inputs are processed automatically (directives applied, `x-model` set, Alpine state updated), and `Alpine.initTree` is called on the row so bindings take effect immediately without a page reload.
+
 ## [0.0.3] - 2026-03-27
 
 ### Added

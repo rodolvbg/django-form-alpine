@@ -161,6 +161,8 @@ Hyphens in the row ID are converted to underscores so the result is a valid Java
 
 Elements with `__prefix__` in their name or ID (Django's empty form template rows) are automatically skipped.
 
+Dynamically added rows (via the "Add another" button) are handled automatically — `core.js` listens for the `formset:added` event and processes each new row the same way as on initial load.
+
 ## Custom resolvers
 
 Use `FormAlpineMixin` and define your resolvers in a `<script>` tag **before** the form's scripts load:

@@ -328,6 +328,73 @@ describe("admin.js tests with Vitest", () => {
     });
   });
 
+  describe("formset:added — dynamic inline rows", () => {
+    it("should apply directives to inputs in a newly added row", () => {
+      const formRow = document.createElement("div");
+      formRow.classList.add("form-row");
+      const input = document.createElement("input");
+      input.type = "text";
+      input.setAttribute("x-form-row-show", "someState");
+      formRow.appendChild(input);
+      document.body.appendChild(formRow);
+
+      window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
+
+      formRow.dispatchEvent(
+        new CustomEvent("formset:added", {
+          bubbles: true,
+          detail: { formsetName: "items" },
+        }),
+      );
+
+      expect(formRow.getAttribute("x-show")).toBe("someState");
+    });
+
+    it("should call Alpine.initTree on the new row when Alpine is present", () => {
+      const initTree = vi.fn();
+      window.Alpine = { initTree };
+
+      const row = document.createElement("div");
+      document.body.appendChild(row);
+
+      window.prepareAlpineBeforeLoad({});
+      row.dispatchEvent(new CustomEvent("formset:added", { bubbles: true }));
+
+      expect(initTree).toHaveBeenCalledWith(row);
+      delete window.Alpine;
+    });
+
+    it("should not throw when Alpine is absent on formset:added", () => {
+      delete window.Alpine;
+      const row = document.createElement("div");
+      document.body.appendChild(row);
+
+      window.prepareAlpineBeforeLoad({});
+
+      expect(() =>
+        row.dispatchEvent(new CustomEvent("formset:added", { bubbles: true })),
+      ).not.toThrow();
+    });
+  });
+
+  describe("addModelData — live Alpine _x_dataStack update", () => {
+    it("should update _x_dataStack when Alpine has already initialised the form", () => {
+      const form = document.createElement("form");
+      form.setAttribute("x-data", "{}");
+      form._x_dataStack = [{}];
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = "reactive";
+      input.setAttribute("x-add-model-data", "liveField");
+      form.appendChild(input);
+      document.body.appendChild(form);
+
+      window.prepareAlpineBeforeLoad({});
+
+      expect(form._x_dataStack[0]["liveField"]).toBe("reactive");
+    });
+  });
+
   describe("__prefix__ empty form template skipping", () => {
     it("should skip elements whose name contains __prefix__", () => {
       const form = document.createElement("form");

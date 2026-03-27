@@ -8,6 +8,7 @@ const exposeToWindowPlugin = {
         if (typeof window !== "undefined") {
           window.applyPrefixedDirectivesToContainer = applyPrefixedDirectivesToContainer;
           window.prepareAlpineBeforeLoad = prepareAlpineBeforeLoad;
+          window.processFormElements = processFormElements;
           window.getInitialValue = getInitialValue;
         }
       `;
