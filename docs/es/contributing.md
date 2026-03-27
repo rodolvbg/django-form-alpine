@@ -1,5 +1,0 @@
-# Contribuir
-
-```{include} ../../CONTRIBUTING.md
-
-```
