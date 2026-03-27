@@ -9,7 +9,11 @@
 
 ### Changed
 
-- **`__row_prefix__` now follows Django's inline field naming convention** (`<prefix>-<number>-<field>`). Previously the container ID was converted to underscores (e.g. `items_0_field`); it is now used as-is (e.g. `items-0-field`), matching the names Django generates for inline form fields.
+- **`__row_prefix__` sanitizes hyphens to underscores** for Alpine.js compatibility. The row prefix (from the container ID or element `name`) is now sanitized so hyphens become underscores, producing valid JavaScript identifiers (e.g. `items_0_myField` instead of `items-0-myField`). Hyphens in Alpine expressions cause a parse error because JavaScript treats them as subtraction operators.
+
+### Fixed
+
+- **Empty form template rows skipped** — elements whose `name` or `id` contains Django's `__prefix__` placeholder are now ignored by `core.js`. Previously these template inputs were processed, producing phantom state keys and Alpine expression errors.
 
 ## [0.0.2] - 2026-03-26
 

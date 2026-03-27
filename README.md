@@ -153,11 +153,13 @@ class MyInlineForm(AdminAlpineMixin, forms.ModelForm):  # or FormAlpineMixin wit
     )
 ```
 
-`__row_prefix__` is resolved following Django's inline field naming convention (`<prefix>-<number>-<field>`):
+Hyphens in the row ID are converted to underscores so the result is a valid JavaScript identifier for Alpine.js:
 
-1. **Container ID** — ID of the closest `tr.form-row` or `.inline-related`, used as-is (e.g. `items-0`). So `__row_prefix__myField` → `items-0-myField`.
-2. **Element `name`** — parsed with a `prefix-number` pattern (e.g. `items-0-title` → prefix `items-0`).
+1. **Container ID** — ID of the closest `tr.form-row` or `.inline-related`, with hyphens replaced by underscores (e.g. `items-0` → `items_0`). So `__row_prefix__myField` → `items_0_myField`.
+2. **Element `name`** — parsed with a `prefix-number` pattern (e.g. `items-0-title` → prefix `items_0`).
 3. **Empty string** — `__row_prefix__` is simply removed if neither applies.
+
+Elements with `__prefix__` in their name or ID (Django's empty form template rows) are automatically skipped.
 
 ## Custom resolvers
 

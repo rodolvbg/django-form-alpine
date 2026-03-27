@@ -22,6 +22,10 @@ const builtinResolvers = {
 function prepareAlpineBeforeLoad(resolvers) {
   const merged = { ...builtinResolvers, ...resolvers };
   document.querySelectorAll("input, select, textarea").forEach((el) => {
+    if (el.name?.includes("__prefix__") || el.id?.includes("__prefix__")) {
+      return;
+    }
+
     addModelData(el);
 
     Object.entries(merged).forEach(([prefix, resolver]) => {
@@ -146,7 +150,10 @@ function handleInlinePrefix(element, value) {
   if (typeof value === "string" && value.includes(inlinePrefix)) {
     const prefixValue = getRowPrefix(element);
     if (prefixValue) {
-      return value.replaceAll(inlinePrefix, prefixValue + "-");
+      // Sanitize for Alpine.js: hyphens are invalid in JS identifiers, so
+      // replace them with underscores to produce a valid variable name.
+      const alpinePrefix = prefixValue.replaceAll("-", "_");
+      return value.replaceAll(inlinePrefix, alpinePrefix + "_");
     }
     return value.replaceAll(inlinePrefix, "");
   }

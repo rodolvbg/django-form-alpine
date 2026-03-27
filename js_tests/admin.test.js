@@ -222,8 +222,8 @@ describe("admin.js tests with Vitest", () => {
         container,
       );
 
-      // Fallback: name "items-0" matches /prefix-number/ → "items-0-field"
-      expect(container.getAttribute("x-model")).toBe("items-0-field");
+      // Fallback: name "items-0" matches /prefix-number/ → sanitized → "items_0_field"
+      expect(container.getAttribute("x-model")).toBe("items_0_field");
     });
 
     it("should replace __row_prefix__ with empty string if no .inline-related container is found", () => {
@@ -276,7 +276,7 @@ describe("admin.js tests with Vitest", () => {
         container,
       );
 
-      expect(container.getAttribute("x-model")).toBe("items-0-otherField");
+      expect(container.getAttribute("x-model")).toBe("items_0_otherField");
     });
 
     it("should replace multiple occurrences of __row_prefix__ using the container ID", () => {
@@ -299,7 +299,7 @@ describe("admin.js tests with Vitest", () => {
       );
 
       expect(container.getAttribute("x-show")).toBe(
-        "form-2-field1 && form-2-field2 !== ''",
+        "form_2_field1 && form_2_field2 !== ''",
       );
     });
   });
@@ -325,6 +325,37 @@ describe("admin.js tests with Vitest", () => {
       window.prepareAlpineBeforeLoad({});
 
       expect(input.getAttribute("x-class")).toBe("highlight");
+    });
+  });
+
+  describe("__prefix__ empty form template skipping", () => {
+    it("should skip elements whose name contains __prefix__", () => {
+      const form = document.createElement("form");
+      const input = document.createElement("input");
+      input.type = "text";
+      input.name = "contactperson_set-__prefix__-phone";
+      input.setAttribute("x-add-model-data", "__row_prefix__phone");
+      form.appendChild(input);
+      document.body.appendChild(form);
+
+      window.prepareAlpineBeforeLoad({});
+
+      expect(input.getAttribute("x-model")).toBeNull();
+      expect(form.getAttribute("x-data")).toBeNull();
+    });
+
+    it("should skip elements whose id contains __prefix__", () => {
+      const form = document.createElement("form");
+      const input = document.createElement("input");
+      input.type = "text";
+      input.id = "id_items-__prefix__-title";
+      input.setAttribute("x-self-show", "someCondition");
+      form.appendChild(input);
+      document.body.appendChild(form);
+
+      window.prepareAlpineBeforeLoad({});
+
+      expect(input.getAttribute("x-show")).toBeNull();
     });
   });
 
@@ -574,8 +605,8 @@ describe("admin.js tests with Vitest", () => {
       window.prepareAlpineBeforeLoad(window.djangoAdminAlpineResolvers);
 
       const data = JSON.parse(form.getAttribute("x-data"));
-      expect(data["items-1-myfield"]).toBe("hello");
-      expect(input.getAttribute("x-model")).toBe("items-1-myfield");
+      expect(data["items_1_myfield"]).toBe("hello");
+      expect(input.getAttribute("x-model")).toBe("items_1_myfield");
     });
 
     it("should handle elements without parents gracefully (coverage for line 35 null branch)", () => {
