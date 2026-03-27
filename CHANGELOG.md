@@ -6,6 +6,10 @@
 
 - **Dynamic inline rows supported** — `core.js` now listens for the `formset:added` event that Django Admin dispatches when a new inline row is added. The new row's inputs are processed automatically (directives applied, `x-model` set, Alpine state updated), and `Alpine.initTree` is called on the row so bindings take effect immediately without a page reload.
 
+### Fixed
+
+- **Empty form template rows skipped** — elements whose `name` or `id` contains Django's `__prefix__` placeholder are now ignored by `core.js`. Previously these template inputs were processed, producing phantom state keys and Alpine expression errors.
+
 ## [0.0.3] - 2026-03-27
 
 ### Added
@@ -16,10 +20,6 @@
 ### Changed
 
 - **`__row_prefix__` sanitizes hyphens to underscores** for Alpine.js compatibility. The row prefix (from the container ID or element `name`) is now sanitized so hyphens become underscores, producing valid JavaScript identifiers (e.g. `items_0_myField` instead of `items-0-myField`). Hyphens in Alpine expressions cause a parse error because JavaScript treats them as subtraction operators.
-
-### Fixed
-
-- **Empty form template rows skipped** — elements whose `name` or `id` contains Django's `__prefix__` placeholder are now ignored by `core.js`. Previously these template inputs were processed, producing phantom state keys and Alpine expression errors.
 
 ## [0.0.2] - 2026-03-26
 
