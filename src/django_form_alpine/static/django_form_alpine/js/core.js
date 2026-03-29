@@ -1,14 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const resolvers = window?.DjangoFormAlpine?.resolvers;
-  if (resolvers) {
-    prepareAlpineBeforeLoad(resolvers);
-  } else {
-    console.warn(
-      "DjangoFormAlpine or its resolvers not found on window. Admin Alpine.js directives will not be processed.",
-    );
-  }
-});
-
 /**
  * Built-in resolvers always available regardless of which preset or custom
  * resolvers are configured. User-defined resolvers can override these keys.
@@ -186,3 +175,22 @@ function handleInlinePrefix(element, value) {
   }
   return value;
 }
+
+/**
+ * Reads resolvers from window.DjangoFormAlpine and starts processing.
+ * Called immediately (not on DOMContentLoaded) because defer scripts execute
+ * after the DOM is fully parsed, in document order — so this runs before
+ * alpine.js and the DOM is already ready.
+ */
+function initFromWindow() {
+  const resolvers = window?.DjangoFormAlpine?.resolvers;
+  if (resolvers) {
+    prepareAlpineBeforeLoad(resolvers);
+  } else {
+    console.warn(
+      "DjangoFormAlpine or its resolvers not found on window. Admin Alpine.js directives will not be processed.",
+    );
+  }
+}
+
+initFromWindow();

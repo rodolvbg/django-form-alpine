@@ -13,66 +13,59 @@ describe("admin.js tests with Vitest", () => {
     window.DjangoFormAlpine = {};
   });
 
-  describe("DOMContentLoaded initialization", () => {
-    it("should process directives automatically on DOMContentLoaded", () => {
+  describe("initialisation (synchronous, no DOMContentLoaded)", () => {
+    it("should process directives when resolvers are configured", () => {
       window.DjangoFormAlpine = {
         resolvers: window.djangoAdminAlpineResolvers,
       };
       const form = document.createElement("form");
       const input = document.createElement("input");
-      input.setAttribute("x-add-model-data", "dom_loaded_test");
+      input.setAttribute("x-add-model-data", "init_test");
       form.appendChild(input);
       document.body.appendChild(form);
 
-      const event = document.createEvent("Event");
-      event.initEvent("DOMContentLoaded", true, true);
-      document.dispatchEvent(event);
+      window.initFromWindow();
 
-      expect(input.getAttribute("x-model")).toBe("dom_loaded_test");
+      expect(input.getAttribute("x-model")).toBe("init_test");
     });
 
-    it("should warn and set resolvers when DjangoFormAlpine has no resolvers", () => {
+    it("should warn and not process when DjangoFormAlpine has no resolvers", () => {
       // window.DjangoFormAlpine = {} (set in beforeEach, no resolvers)
-      // core.js DOMContentLoaded runs first → no resolvers → console.warn (covers core.js:6-9)
-      // admin.js DOMContentLoaded runs second → no resolvers → enters if block, sets them (covers admin.js:38-43)
       const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-      const event = document.createEvent("Event");
-      event.initEvent("DOMContentLoaded", true, true);
-      document.dispatchEvent(event);
+      window.initFromWindow();
 
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining("DjangoFormAlpine or its resolvers not found"),
       );
-      expect(window.DjangoFormAlpine.resolvers).toBeDefined();
-      expect(window.DjangoFormAlpine.resolvers["form-row"]).toBeDefined();
       warnSpy.mockRestore();
     });
 
-    it("should overwrite resolvers when useAdminResolvers is true", () => {
+    it("should set admin resolvers when DjangoFormAlpine has no resolvers", () => {
+      // window.DjangoFormAlpine = {} (no resolvers) — admin init sets them
+      window.prepareAdminAlpineBeforeLoad();
+
+      expect(window.DjangoFormAlpine.resolvers).toBeDefined();
+      expect(window.DjangoFormAlpine.resolvers["form-row"]).toBeDefined();
+    });
+
+    it("should merge custom resolvers when useAdminResolvers is true", () => {
       const customResolver = vi.fn();
       window.DjangoFormAlpine = {
         useAdminResolvers: true,
         resolvers: { custom: customResolver },
       };
 
-      const event = document.createEvent("Event");
-      event.initEvent("DOMContentLoaded", true, true);
-      document.dispatchEvent(event);
+      window.prepareAdminAlpineBeforeLoad();
 
-      // Admin resolvers should be merged in (admin resolvers take priority as base)
       expect(window.DjangoFormAlpine.resolvers["form-row"]).toBeDefined();
-      // Custom resolver is preserved (spread after admin defaults)
       expect(window.DjangoFormAlpine.resolvers["custom"]).toBe(customResolver);
     });
 
     it("should initialise DjangoFormAlpine when it is undefined", () => {
-      // Covers admin.js:32 — the `|| {}` branch when window.DjangoFormAlpine is falsy
       window.DjangoFormAlpine = undefined;
 
-      const event = document.createEvent("Event");
-      event.initEvent("DOMContentLoaded", true, true);
-      document.dispatchEvent(event);
+      window.prepareAdminAlpineBeforeLoad();
 
       expect(window.DjangoFormAlpine).toBeDefined();
       expect(window.DjangoFormAlpine.resolvers["form-row"]).toBeDefined();

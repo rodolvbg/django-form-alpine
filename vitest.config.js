@@ -9,6 +9,7 @@ const exposeToWindowPlugin = {
           window.applyPrefixedDirectivesToContainer = applyPrefixedDirectivesToContainer;
           window.prepareAlpineBeforeLoad = prepareAlpineBeforeLoad;
           window.processFormElements = processFormElements;
+          window.initFromWindow = initFromWindow;
           window.getInitialValue = getInitialValue;
         }
       `;
@@ -18,6 +19,7 @@ const exposeToWindowPlugin = {
       const exportCode = `
         if (typeof window !== "undefined") {
           window.djangoAdminAlpineResolvers = djangoAdminAlpineResolvers;
+          window.prepareAdminAlpineBeforeLoad = prepareAdminAlpineBeforeLoad;
         }
       `;
       return { code: src + exportCode, map: null };

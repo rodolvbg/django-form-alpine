@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.5] - 2026-03-29
+
+### Fixed
+
+- **Scripts now run synchronously instead of on `DOMContentLoaded`** — `admin.js` and `core.js` previously registered `DOMContentLoaded` listeners, but Alpine v3 calls `Alpine.start()` immediately when its script executes (it checks `document.readyState`, which is already `"interactive"` for `defer` scripts). This meant Alpine initialized the DOM before our listeners fired, causing "Undefined variable" Alpine errors on every directive we applied. Both scripts now run their initialization synchronously. Since `defer` guarantees document-order execution (`admin.js` → `core.js` → `alpine.js`), Alpine always sees the fully prepared DOM.
+
 ## [0.0.4] - 2026-03-27
 
 ### Added

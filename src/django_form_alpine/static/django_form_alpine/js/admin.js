@@ -62,6 +62,6 @@ function getFieldContainer(el) {
   return getFieldBox(el)?.parentElement || null;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  prepareAdminAlpineBeforeLoad();
-});
+// Run immediately — defer scripts execute in document order after full HTML
+// parse, so admin.js always runs before core.js and alpine.js.
+prepareAdminAlpineBeforeLoad();
