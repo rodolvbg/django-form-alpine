@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-form-alpine"
-version = "0.0.4"
+version = "0.0.5"
 description = "Integrate Alpine.js into Django forms declaratively using widget attrs and resolvers"
 keywords = ["django", "form", "alpinejs", "django-admin", "alpine"]
 authors = [
