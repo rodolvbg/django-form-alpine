@@ -1,4 +1,5 @@
 # django-form-alpine
+[![PyPI version](https://img.shields.io/pypi/v/django-form-alpine.svg)](https://pypi.org/project/django-form-alpine/)
 
 `django-form-alpine` integrates [Alpine.js](https://alpinejs.dev/) into Django forms declaratively — you write Alpine directives directly in your widget `attrs`, and the library resolves which surrounding DOM element each directive should land on.
 
