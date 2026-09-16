@@ -1,8 +1,20 @@
+"""Settings for the django-form-alpine example project.
+
+Run it with:
+    cd example
+    python manage.py migrate
+    python manage.py createsuperuser
+    python manage.py runserver
+
+This project is also reused as the Django app under test by the test
+suite in ../tests/ (see tests/settings.py).
+"""
+
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
-SECRET_KEY = "dummy-secret-key"
+SECRET_KEY = "insecure-example-key-do-not-use-in-production"
 
 DEBUG = True
 
@@ -16,7 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_form_alpine",
-    "example.catalog",
+    "catalog",
 ]
 
 MIDDLEWARE = [
@@ -29,7 +41,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "example.urls"
+ROOT_URLCONF = "urls"
 
 TEMPLATES = [
     {

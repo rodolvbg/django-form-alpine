@@ -47,7 +47,7 @@ class AdminAlpineTests(StaticLiveServerTestCase):
     def test_alpine_js_loaded_on_add_page(self):
         """Alpine.js is available on the ParentModel add page."""
         page = self.page
-        page.goto(f"{self.live_server_url}/admin/test_app/parentmodel/add/")
+        page.goto(f"{self.live_server_url}/admin/catalog/parentmodel/add/")
         page.wait_for_function("() => window.Alpine && window.Alpine.version")
         version = page.evaluate("() => window.Alpine.version")
         assert version, "Alpine.js should expose a version string"
@@ -55,7 +55,7 @@ class AdminAlpineTests(StaticLiveServerTestCase):
     def test_admin_js_sets_x_data_on_form(self):
         """admin.js initialises x-data on the form with extraFieldState."""
         page = self.page
-        page.goto(f"{self.live_server_url}/admin/test_app/parentmodel/add/")
+        page.goto(f"{self.live_server_url}/admin/catalog/parentmodel/add/")
         page.wait_for_function("() => document.querySelector('form[x-data]') !== null")
         x_data_str = page.locator("form[x-data]").first.get_attribute("x-data")
         assert x_data_str is not None, "form must have x-data attribute"
@@ -66,7 +66,7 @@ class AdminAlpineTests(StaticLiveServerTestCase):
     def test_x_add_model_data_becomes_x_model(self):
         """x-add-model-data on extra_field is converted to x-model by admin.js."""
         page = self.page
-        page.goto(f"{self.live_server_url}/admin/test_app/parentmodel/add/")
+        page.goto(f"{self.live_server_url}/admin/catalog/parentmodel/add/")
         page.wait_for_function("() => document.querySelector('form[x-data]') !== null")
         expect(page.locator("#id_extra_field")).to_have_attribute(
             "x-model", "extraFieldState"
@@ -75,7 +75,7 @@ class AdminAlpineTests(StaticLiveServerTestCase):
     def test_form_row_hides_when_secret_typed(self):
         """Typing 'secret' hides the form row via Alpine x-show reactivity."""
         page = self.page
-        page.goto(f"{self.live_server_url}/admin/test_app/parentmodel/add/")
+        page.goto(f"{self.live_server_url}/admin/catalog/parentmodel/add/")
         page.wait_for_function("() => window.Alpine && window.Alpine.version")
 
         extra_field = page.locator("#id_extra_field")
@@ -89,7 +89,7 @@ class AdminAlpineTests(StaticLiveServerTestCase):
     def test_form_row_reappears_after_clearing_secret(self):
         """Clearing the 'secret' value restores form row visibility."""
         page = self.page
-        page.goto(f"{self.live_server_url}/admin/test_app/parentmodel/add/")
+        page.goto(f"{self.live_server_url}/admin/catalog/parentmodel/add/")
         page.wait_for_function("() => window.Alpine && window.Alpine.version")
 
         extra_field = page.locator("#id_extra_field")
@@ -111,7 +111,7 @@ class AdminAlpineTests(StaticLiveServerTestCase):
     def test_stacked_inline_extra_has_x_model(self):
         """Stacked inline stacked_extra input gets x-model set by admin.js."""
         page = self.page
-        page.goto(f"{self.live_server_url}/admin/test_app/parentmodel/add/")
+        page.goto(f"{self.live_server_url}/admin/catalog/parentmodel/add/")
         page.wait_for_function("() => document.querySelector('form[x-data]') !== null")
         stacked_extra = page.locator("[id$='-stacked_extra']").first
         x_model = stacked_extra.get_attribute("x-model")
@@ -121,7 +121,7 @@ class AdminAlpineTests(StaticLiveServerTestCase):
     def test_tabular_inline_extra_has_x_model(self):
         """Tabular inline tabular_extra checkbox gets x-model set by admin.js."""
         page = self.page
-        page.goto(f"{self.live_server_url}/admin/test_app/parentmodel/add/")
+        page.goto(f"{self.live_server_url}/admin/catalog/parentmodel/add/")
         page.wait_for_function("() => document.querySelector('form[x-data]') !== null")
         tabular_extra = page.locator("[id$='-tabular_extra']").first
         x_model = tabular_extra.get_attribute("x-model")
@@ -131,7 +131,7 @@ class AdminAlpineTests(StaticLiveServerTestCase):
     def test_inline_x_data_contains_inline_fields(self):
         """The form x-data contains keys for all inline extra fields."""
         page = self.page
-        page.goto(f"{self.live_server_url}/admin/test_app/parentmodel/add/")
+        page.goto(f"{self.live_server_url}/admin/catalog/parentmodel/add/")
         page.wait_for_function("() => document.querySelector('form[x-data]') !== null")
         x_data_str = page.locator("form[x-data]").first.get_attribute("x-data")
         x_data = json.loads(x_data_str)
