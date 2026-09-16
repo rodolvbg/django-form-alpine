@@ -18,7 +18,7 @@ class ParentModelForm(AdminAlpineMixin, forms.ModelForm):
 
     class Meta:
         model = ParentModel
-        fields = "__all__"
+        fields = ["name", "description"]
 
 
 class ChildModelTabularForm(AdminAlpineMixin, forms.ModelForm):
@@ -33,7 +33,7 @@ class ChildModelTabularForm(AdminAlpineMixin, forms.ModelForm):
 
     class Meta:
         model = ChildModelTabular
-        fields = "__all__"
+        fields = ["parent", "title", "quantity"]
 
 
 class ChildModelStackedForm(AdminAlpineMixin, forms.ModelForm):
@@ -49,4 +49,4 @@ class ChildModelStackedForm(AdminAlpineMixin, forms.ModelForm):
 
     class Meta:
         model = ChildModelStacked
-        fields = "__all__"
+        fields = ["parent", "note", "is_important"]

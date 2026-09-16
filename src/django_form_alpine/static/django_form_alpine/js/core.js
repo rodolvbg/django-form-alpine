@@ -5,7 +5,7 @@
  *    to the input (e.g. in formsets where no surrounding container is needed).
  */
 const builtinResolvers = {
-  self: (el) => el,
+    self: (el) => el,
 };
 
 /**
@@ -15,18 +15,18 @@ const builtinResolvers = {
  * @param {Object} resolvers - Map of prefix → resolver function.
  */
 function processFormElements(container, resolvers) {
-  const merged = { ...builtinResolvers, ...resolvers };
-  container.querySelectorAll("input, select, textarea").forEach((el) => {
-    if (el.name?.includes("__prefix__") || el.id?.includes("__prefix__")) {
-      return;
-    }
+    const merged = { ...builtinResolvers, ...resolvers };
+    container.querySelectorAll("input, select, textarea").forEach((el) => {
+        if (el.name?.includes("__prefix__") || el.id?.includes("__prefix__")) {
+            return;
+        }
 
-    addModelData(el);
+        addModelData(el);
 
-    Object.entries(merged).forEach(([prefix, resolver]) => {
-      applyPrefixedDirectivesToContainer(prefix, el, resolver(el));
+        Object.entries(merged).forEach(([prefix, resolver]) => {
+            applyPrefixedDirectivesToContainer(prefix, el, resolver(el));
+        });
     });
-  });
 }
 
 /**
@@ -35,14 +35,14 @@ function processFormElements(container, resolvers) {
  * @param {Object} resolvers - Map of prefix → resolver function.
  */
 function prepareAlpineBeforeLoad(resolvers) {
-  processFormElements(document, resolvers);
+    processFormElements(document, resolvers);
 
-  document.addEventListener("formset:added", (event) => {
-    processFormElements(event.target, resolvers);
-    if (window.Alpine) {
-      window.Alpine.initTree(event.target);
-    }
-  });
+    document.addEventListener("formset:added", (event) => {
+        processFormElements(event.target, resolvers);
+        if (window.Alpine) {
+            window.Alpine.initTree(event.target);
+        }
+    });
 }
 
 /**
@@ -52,27 +52,27 @@ function prepareAlpineBeforeLoad(resolvers) {
  * @param {HTMLElement|null} container - The target container element to apply the directives to.
  */
 function applyPrefixedDirectivesToContainer(prefix, element, container) {
-  if (!container) return;
-  const prefixes = ["x-", "@"];
+    if (!container) return;
+    const prefixes = ["x-", "@"];
 
-  element.getAttributeNames().forEach((name) => {
-    for (const p of prefixes) {
-      const fullPrefix = `${p}${prefix}-`;
-      if (name.startsWith(fullPrefix)) {
-        const directive = name.slice(fullPrefix.length).trim();
-        if (!directive) continue;
+    element.getAttributeNames().forEach((name) => {
+        for (const p of prefixes) {
+            const fullPrefix = `${p}${prefix}-`;
+            if (name.startsWith(fullPrefix)) {
+                const directive = name.slice(fullPrefix.length).trim();
+                if (!directive) continue;
 
-        let value = element.getAttribute(name) || "true";
-        value = handleInlinePrefix(element, value);
+                let value = element.getAttribute(name) || "true";
+                value = handleInlinePrefix(element, value);
 
-        container.setAttribute(
-          `${p}${directive}`,
-          value === "true" ? "" : value,
-        );
-        break;
-      }
-    }
-  });
+                container.setAttribute(
+                    `${p}${directive}`,
+                    value === "true" ? "" : value,
+                );
+                break;
+            }
+        }
+    });
 }
 
 /**
@@ -81,32 +81,32 @@ function applyPrefixedDirectivesToContainer(prefix, element, container) {
  * @param {HTMLElement} el - The form input element to process.
  */
 function addModelData(el) {
-  let xModel = el.getAttribute("x-add-model-data");
-  const xModelExisting = el.getAttribute("x-model");
+    let xModel = el.getAttribute("x-add-model-data");
+    const xModelExisting = el.getAttribute("x-model");
 
-  if (xModel) {
-    xModel = handleInlinePrefix(el, xModel);
-    const form = el.closest("form");
-    if (!form) return;
-    const data = JSON.parse(form.getAttribute("x-data") || "{}");
-    if (!(xModel in data)) {
-      const initialValue = getInitialValue(el);
-      data[xModel] = initialValue;
-      form.setAttribute("x-data", JSON.stringify(data));
-      // If Alpine has already initialised this form, also update the live
-      // reactive state so the new key is immediately available to x-model.
-      if (form._x_dataStack?.[0] && !(xModel in form._x_dataStack[0])) {
-        form._x_dataStack[0][xModel] = initialValue;
-      }
+    if (xModel) {
+        xModel = handleInlinePrefix(el, xModel);
+        const form = el.closest("form");
+        if (!form) return;
+        const data = JSON.parse(form.getAttribute("x-data") || "{}");
+        if (!(xModel in data)) {
+            const initialValue = getInitialValue(el);
+            data[xModel] = initialValue;
+            form.setAttribute("x-data", JSON.stringify(data));
+            // If Alpine has already initialised this form, also update the live
+            // reactive state so the new key is immediately available to x-model.
+            if (form._x_dataStack?.[0] && !(xModel in form._x_dataStack[0])) {
+                form._x_dataStack[0][xModel] = initialValue;
+            }
+        }
+        if (xModelExisting) {
+            console.warn(
+                `Element ${el.name} has both "x-add-model-data" and "x-model" attributes. "x-add-model-data" will be ignored.`,
+            );
+        } else {
+            el.setAttribute("x-model", xModel);
+        }
     }
-    if (xModelExisting) {
-      console.warn(
-        `Element ${el.name} has both "x-add-model-data" and "x-model" attributes. "x-add-model-data" will be ignored.`,
-      );
-    } else {
-      el.setAttribute("x-model", xModel);
-    }
-  }
 }
 
 /**
@@ -115,15 +115,15 @@ function addModelData(el) {
  * @returns {string|boolean} The initial value of the element.
  */
 function getInitialValue(el) {
-  if (el.type === "checkbox") {
-    return el.checked;
-  }
+    if (el.type === "checkbox") {
+        return el.checked;
+    }
 
-  if (el.type === "radio") {
-    return el.checked ? el.value : "";
-  }
+    if (el.type === "radio") {
+        return el.checked ? el.value : "";
+    }
 
-  return el.value ?? "";
+    return el.value ?? "";
 }
 
 /**
@@ -138,18 +138,18 @@ function getInitialValue(el) {
  * @returns {string} The row prefix string, or "" if none can be determined.
  */
 function getRowPrefix(element) {
-  const container =
-    element.closest("tr.form-row") || element.closest(".inline-related");
-  if (container) {
-    return container?.id || "";
-  }
-  const regex = /^([a-zA-Z0-9_-]+)-(\d+)$/;
-  const match = element?.name?.match(regex);
+    const container =
+        element.closest("tr.form-row") || element.closest(".inline-related");
+    if (container) {
+        return container?.id || "";
+    }
+    const regex = /^([a-zA-Z0-9_-]+)-(\d+)$/;
+    const match = element?.name?.match(regex);
 
-  if (match) {
-    return `${match[1]}-${match[2]}`;
-  }
-  return "";
+    if (match) {
+        return `${match[1]}-${match[2]}`;
+    }
+    return "";
 }
 
 /**
@@ -162,18 +162,18 @@ function getRowPrefix(element) {
  * @returns {string} The processed string with all __row_prefix__ occurrences replaced.
  */
 function handleInlinePrefix(element, value) {
-  const inlinePrefix = "__row_prefix__";
-  if (typeof value === "string" && value.includes(inlinePrefix)) {
-    const prefixValue = getRowPrefix(element);
-    if (prefixValue) {
-      // Sanitize for Alpine.js: hyphens are invalid in JS identifiers, so
-      // replace them with underscores to produce a valid variable name.
-      const alpinePrefix = prefixValue.replaceAll("-", "_");
-      return value.replaceAll(inlinePrefix, alpinePrefix + "_");
+    const inlinePrefix = "__row_prefix__";
+    if (typeof value === "string" && value.includes(inlinePrefix)) {
+        const prefixValue = getRowPrefix(element);
+        if (prefixValue) {
+            // Sanitize for Alpine.js: hyphens are invalid in JS identifiers, so
+            // replace them with underscores to produce a valid variable name.
+            const alpinePrefix = prefixValue.replaceAll("-", "_");
+            return value.replaceAll(inlinePrefix, alpinePrefix + "_");
+        }
+        return value.replaceAll(inlinePrefix, "");
     }
-    return value.replaceAll(inlinePrefix, "");
-  }
-  return value;
+    return value;
 }
 
 /**
@@ -183,14 +183,14 @@ function handleInlinePrefix(element, value) {
  * alpine.js and the DOM is already ready.
  */
 function initFromWindow() {
-  const resolvers = window?.DjangoFormAlpine?.resolvers;
-  if (resolvers) {
-    prepareAlpineBeforeLoad(resolvers);
-  } else {
-    console.warn(
-      "DjangoFormAlpine or its resolvers not found on window. Admin Alpine.js directives will not be processed.",
-    );
-  }
+    const resolvers = window?.DjangoFormAlpine?.resolvers;
+    if (resolvers) {
+        prepareAlpineBeforeLoad(resolvers);
+    } else {
+        console.warn(
+            "DjangoFormAlpine or its resolvers not found on window. Admin Alpine.js directives will not be processed.",
+        );
+    }
 }
 
 initFromWindow();

@@ -1,10 +1,10 @@
 import { defineConfig } from "vitest/config";
 
 const exposeToWindowPlugin = {
-  name: "expose-to-window",
-  transform(src, id) {
-    if (id.endsWith("core.js")) {
-      const exportCode = `
+    name: "expose-to-window",
+    transform(src, id) {
+        if (id.endsWith("core.js")) {
+            const exportCode = `
         if (typeof window !== "undefined") {
           window.applyPrefixedDirectivesToContainer = applyPrefixedDirectivesToContainer;
           window.prepareAlpineBeforeLoad = prepareAlpineBeforeLoad;
@@ -13,35 +13,36 @@ const exposeToWindowPlugin = {
           window.getInitialValue = getInitialValue;
         }
       `;
-      return { code: src + exportCode, map: null };
-    }
-    if (id.endsWith("admin.js")) {
-      const exportCode = `
+            return { code: src + exportCode, map: null };
+        }
+        if (id.endsWith("admin.js")) {
+            const exportCode = `
         if (typeof window !== "undefined") {
           window.djangoAdminAlpineResolvers = djangoAdminAlpineResolvers;
           window.prepareAdminAlpineBeforeLoad = prepareAdminAlpineBeforeLoad;
         }
       `;
-      return { code: src + exportCode, map: null };
-    }
-  },
+            return { code: src + exportCode, map: null };
+        }
+    },
 };
 
 export default defineConfig({
-  test: {
-    environment: "jsdom",
-    exclude: [
-      "node_modules",
-      "src/django_form_alpine/static/django_form_alpine/js/alpine.js",
-    ],
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "html"],
-      include: [
-        "src/django_form_alpine/static/django_form_alpine/js/core.js",
-        "src/django_form_alpine/static/django_form_alpine/js/admin.js",
-      ],
+    test: {
+        environment: "jsdom",
+        include: ["tests/js/**/*.test.js"],
+        exclude: [
+            "node_modules",
+            "src/django_form_alpine/static/django_form_alpine/js/alpine.js",
+        ],
+        coverage: {
+            provider: "v8",
+            reporter: ["text", "html"],
+            include: [
+                "src/django_form_alpine/static/django_form_alpine/js/core.js",
+                "src/django_form_alpine/static/django_form_alpine/js/admin.js",
+            ],
+        },
     },
-  },
-  plugins: [exposeToWindowPlugin],
+    plugins: [exposeToWindowPlugin],
 });
