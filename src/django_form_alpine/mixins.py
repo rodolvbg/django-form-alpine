@@ -1,5 +1,30 @@
+from typing import TYPE_CHECKING
+
 from django.conf import settings
-from django.forms import Media, Script
+from django.forms import Media
+
+if TYPE_CHECKING:
+    from django.forms import Script
+else:
+    try:
+        # Script (a MediaAsset subclass letting a Media.js entry carry
+        # extra <script> attributes like `defer`) was only added in
+        # Django 5.2 — https://github.com/django/django/pull/18782.
+        # Importing it unconditionally would break every older Django
+        # this package otherwise supports.
+        from django.forms import Script
+    except ImportError:  # Django < 5.2
+        Script = None
+
+
+def _script(path, *, defer):
+    """Build a Media.js entry for ``path``.
+
+    Uses Django's ``Script`` asset (see above) to set ``defer`` when
+    it's available; falls back to a plain path string otherwise — the
+    script still loads, just without ``defer``, on Django < 5.2.
+    """
+    return Script(path, defer=defer) if Script is not None else path
 
 
 class FormAlpineMixin:
@@ -20,12 +45,13 @@ class FormAlpineMixin:
             "django_form_alpine/js/alpine.js",
         )
         # django-stubs types Media(js=...) as Sequence[str] | None, but real
-        # Django (4.1+) also accepts MediaAsset instances like Script, which
-        # is what's used here to get `defer=True` on the <script> tag.
+        # Django (5.2+) also accepts MediaAsset instances like Script, which
+        # is what's used here (when available) to get `defer=True` on the
+        # <script> tag.
         return super().media + Media(  # type: ignore[misc]
-            js=(  # type: ignore[arg-type]
-                Script("django_form_alpine/js/core.js", defer=True),
-                Script(alpine_js_path, defer=True),
+            js=(
+                _script("django_form_alpine/js/core.js", defer=True),
+                _script(alpine_js_path, defer=True),
             ),
         )
 
@@ -39,7 +65,5 @@ class AdminAlpineMixin(FormAlpineMixin):
     def media(self) -> Media:
         # See the type: ignore note on FormAlpineMixin.media above: Media(js=...)
         # is stubbed as Sequence[str] | None but Script instances are valid too.
-        admin_media = Media(
-            js=[Script("django_form_alpine/js/admin.js", defer=True)]  # type: ignore[list-item]
-        )
+        admin_media = Media(js=[_script("django_form_alpine/js/admin.js", defer=True)])
         return admin_media + super().media

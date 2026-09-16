@@ -28,6 +28,34 @@ This project uses [uv](https://github.com/astral-sh/uv) for Python dependency ma
     uv run mypy src example
     ```
 
+### Compatibility matrix (tox)
+
+`uv run pytest` above only runs against whatever Django version
+`uv.lock` resolved (the newest one satisfying `dependencies`). To check
+the full supported range — every Django series in `classifiers`,
+against the oldest and newest Python it supports (within this
+package's own `requires-python` floor) — run the tox matrix instead:
+
+```bash
+uv run tox run           # every env
+uv run tox -e py39-dj32  # a single env, e.g. to debug one failure
+```
+
+`tox.ini` lists the exact envs. Each one gets its own ephemeral venv
+(via [tox-uv](https://github.com/tox-dev/tox-uv), using uv's own Python
+builds — `uv python install <version>` once for any you don't have yet)
+with only `pytest`/`pytest-django`/`pytest-cov` and that env's pinned
+Django, not the full `dev` group, and skips `tests/e2e/` (no Playwright
+in those envs). This only tests boundaries (oldest + newest Python per
+Django series), not every valid combination — that catches most real
+breakage while staying fast. This is exactly how the matrix caught a
+real bug: `mixins.py` imported `django.forms.Script` unconditionally,
+which doesn't exist before Django 5.2 — every older Django version
+would crash on import despite being declared as supported (fixed with
+a conditional import and a plain-string fallback). Runs in CI as a
+separate `compat-matrix.yml` workflow, alongside the regular
+`pytest.yml`.
+
 ### JavaScript Tests
 
 1.  **Install dependencies**:

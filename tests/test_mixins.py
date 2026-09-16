@@ -1,3 +1,4 @@
+import django
 from django.forms import Media
 from django.test import SimpleTestCase, override_settings
 
@@ -28,7 +29,11 @@ class FormAlpineMixinTest(SimpleTestCase):
         self.assertIn("django_form_alpine/js/alpine.js", media_js)
         alpine_js = 'src="/static/django_form_alpine/js/alpine.js"'
         self.assertIn(alpine_js, media_js)
-        self.assertIn("defer", media_js)
+        if django.VERSION >= (5, 2):
+            # Media's Script asset (the only way to get `defer` onto a
+            # <script> tag here) was added in Django 5.2 — see the
+            # django.forms import fallback in mixins.py.
+            self.assertIn("defer", media_js)
 
 
 class AdminAlpineMixinTest(SimpleTestCase):
@@ -43,7 +48,8 @@ class AdminAlpineMixinTest(SimpleTestCase):
         self.assertIn("django_form_alpine/js/alpine.js", media_js)
         admin_js = 'src="/static/django_form_alpine/js/admin.js"'
         self.assertIn(admin_js, media_js)
-        self.assertIn("defer", media_js)
+        if django.VERSION >= (5, 2):
+            self.assertIn("defer", media_js)
 
     def test_media_preserves_base_media(self):
         """

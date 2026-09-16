@@ -43,6 +43,8 @@ optional-dependencies.dev = [
   "pytest-django>=4.8",
   "pytest-playwright>=0.5",
   "ruff>=0.2",
+  "tox>=4",
+  "tox-uv>=1",
 ]
 urls.Homepage = "https://django-form-alpine.readthedocs.io/en/latest/"
 urls.Issues = "https://github.com/rodolvbg/django-form-alpine/issues"
@@ -59,6 +61,8 @@ dev = [
   "pytest-django>=4.8",
   "pytest-playwright>=0.5",
   "ruff>=0.2",
+  "tox>=4",
+  "tox-uv>=1",
 ]
 
 [tool.hatch]
