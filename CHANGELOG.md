@@ -1,5 +1,40 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Compatibility matrix via tox (`[tool.tox]` in `pyproject.toml`, using
+  [tox-uv](https://github.com/tox-dev/tox-uv)): tests every Django series
+  in `classifiers` (3.2 through 5.2) against its oldest and newest
+  supported Python, within this package's own floor. `uv run tox run`
+  locally, a separate `compat-matrix.yml` CI workflow.
+- Type checking: `mypy` + `django-stubs`, and a `py.typed` marker.
+
+### Changed
+
+- Build backend: `setuptools` → `hatchling`.
+- Test config moved from a standalone `pytest.ini` into
+  `[tool.pytest.ini_options]` in `pyproject.toml`.
+- JS lint/format: `prettier` → `biome`, matching the sibling `django-*`
+  packages.
+- JS tests moved from a top-level `js_tests/` directory to `tests/js/`.
+- `tests/test_playwright.py` renamed and moved to `tests/e2e/test_e2e.py`
+  — browser end-to-end tests now live in their own subdirectory, named
+  after what they test rather than the tool.
+
+### Fixed
+
+- **`mixins.py` imported `django.forms.Script` unconditionally, but
+  `Script` was only added in Django 5.2** — every older Django version
+  this package declares support for (3.2 through 5.1) would crash
+  immediately on import. The regular test suite never caught this because
+  `uv.lock` always resolves to the newest compatible Django; the new
+  compatibility matrix caught it on its very first Django-3.2 run. Fixed
+  with a conditional import and a plain-string fallback for `Media.js`
+  entries on Django < 5.2 — `defer` is only set on the `<script>` tag when
+  `Script` is available, everything still loads either way.
+
 ## [0.0.5] - 2026-03-29
 
 ### Fixed
