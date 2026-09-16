@@ -94,6 +94,7 @@ ini_options.addopts = "--cov=django_form_alpine --cov-report=term-missing"
 ini_options.DJANGO_SETTINGS_MODULE = "tests.settings"
 
 [tool.coverage]
+run.branch = true
 run.source = [ "django_form_alpine" ]
 report.show_missing = true
 report.skip_covered = true
