@@ -15,7 +15,7 @@ repos:
   - id: trailing-whitespace
 
 - repo: https://github.com/biomejs/pre-commit
-  rev: d1ce4972fb5ad09afd33b432bca71e8c5dfbb2b5  # frozen: v2.5.6
+  rev: 221fa73eac76e0540995318b44e2efb2774af990  # frozen: v2.5.14
   hooks:
   - id: biome-check
     additional_dependencies:
@@ -23,13 +23,13 @@ repos:
     language_version: default
 
 - repo: https://github.com/adamchainz/django-upgrade
-  rev: bdcc9646c249f00ec9781751791e7b75b48b3722  # frozen: 1.31.1
+  rev: e668ea858b908d23a9702b24214f4fc5d07ed50f  # frozen: 1.32.0
   hooks:
   - id: django-upgrade
     args: [--target-version, "3.2"]
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: 39d9ac5938dadb73df0564a45f163e25ff9fa6e2  # frozen: v0.16.1
+  rev: a56c0b927e6465d37cae3e97d35d4d18ab2b96cd  # frozen: v0.16.9
   hooks:
   - id: ruff-check
     args: [--fix]
@@ -52,6 +52,6 @@ repos:
     args: [src/django_form_alpine, example]
 
 - repo: https://github.com/tox-dev/pyproject-fmt
-  rev: d600c142bb19f521ae6a6a345f94a2efd7937759  # frozen: v2.26.0
+  rev: 59e7b26529dc6f15c43063064b8b06ded60d0910  # frozen: v2.29.4
   hooks:
   - id: pyproject-fmt
