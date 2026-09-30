@@ -31,6 +31,13 @@ resolvers/custom
 ```
 
 ```{toctree}
+:maxdepth: 2
+:caption: Themes
+
+themes/unfold
+```
+
+```{toctree}
 :maxdepth: 1
 :caption: Reference
 

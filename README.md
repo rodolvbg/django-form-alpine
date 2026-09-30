@@ -40,6 +40,7 @@ Two mixins are provided:
 | ------------------ | ------------------------------------ | ------------------------------------------ |
 | `FormAlpineMixin`  | `core.js` + `alpine.js`              | Any Django form with custom resolvers      |
 | `AdminAlpineMixin` | `admin.js` + `core.js` + `alpine.js` | Django Admin (built-in resolvers included) |
+| `contrib.unfold.UnfoldAdminAlpineMixin` | `contrib/unfold.js` + `core.js` (Unfold's Alpine.js) | [django-unfold](docs/themes/unfold.md)'s admin |
 
 ## Quick start
 
@@ -200,6 +201,11 @@ When you provide your own resolvers, the admin preset is **not** loaded. If you 
   };
 </script>
 ```
+
+## Themes
+
+- [django-unfold](docs/themes/unfold.md): `UnfoldAdminAlpineMixin`, with
+  Unfold's own Alpine.js.
 
 ## Configuration
 

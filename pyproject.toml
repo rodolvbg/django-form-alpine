@@ -53,6 +53,7 @@ urls.Repository = "https://github.com/rodolvbg/django-form-alpine"
 [dependency-groups]
 dev = [
   "django-stubs[compatible-mypy]>=5",
+  "django-unfold>=0.108; python_version>='3.12'",
   "mypy>=1.10",
   "playwright>=1.41",
   "pre-commit>=3.6",
@@ -81,12 +82,15 @@ lint.ignore = [ "E203" ]
 
 [tool.mypy]
 mypy_path = "src:example"
+# The Unfold demo's settings and URLs import the demo's top-level modules.
+exclude = [ "example/(settings|urls)_unfold\\.py$" ]
 # mypy itself only supports checking down to 3.10 (this package's actual
 # requires-python floor of 3.9 in [project] is unaffected by this setting).
 python_version = "3.10"
 warn_redundant_casts = true
 warn_unused_ignores = true
 plugins = [ "mypy_django_plugin.main" ]
+overrides = [ { module = [ "unfold", "unfold.*" ], ignore_missing_imports = true } ]
 
 [tool.django-stubs]
 django_settings_module = "tests.settings"
@@ -120,7 +124,7 @@ env_list = [
   "py39-dj41",
   "py39-dj42",
 ]
-env_run_base.commands = [ [ "pytest", "tests", "--ignore=tests/e2e", "{posargs}" ] ]
+env_run_base.commands = [ [ "pytest", "tests", "--ignore=tests/e2e", "--no-cov", "{posargs}" ] ]
 env_run_base.deps = [
   "pytest",
   "pytest-django",

@@ -11,6 +11,16 @@ const exposeToWindowPlugin = {
           window.processFormElements = processFormElements;
           window.initFromWindow = initFromWindow;
           window.getInitialValue = getInitialValue;
+          window.startDjangoFormAlpine = start;
+        }
+      `;
+            return { code: src + exportCode, map: null };
+        }
+        if (id.endsWith("contrib/unfold.js")) {
+            const exportCode = `
+        if (typeof window !== "undefined") {
+          window.djangoUnfoldAlpineResolvers = djangoUnfoldAlpineResolvers;
+          window.prepareUnfoldAlpineBeforeLoad = prepareUnfoldAlpineBeforeLoad;
         }
       `;
             return { code: src + exportCode, map: null };
@@ -41,6 +51,7 @@ export default defineConfig({
             include: [
                 "src/django_form_alpine/static/django_form_alpine/js/core.js",
                 "src/django_form_alpine/static/django_form_alpine/js/admin.js",
+                "src/django_form_alpine/static/django_form_alpine/js/contrib/unfold.js",
             ],
         },
     },

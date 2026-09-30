@@ -129,10 +129,11 @@ function getInitialValue(el) {
 /**
  * Returns the row prefix used to namespace Alpine.js state keys for inline forms.
  * Resolution order:
- *  1. Closest "tr.form-row" or ".inline-related" container — its ID as-is
- *     (e.g. "items-0"), matching Django's own inline field naming convention.
- *  2. element.name parsed with the pattern /prefix-number/ — returned as-is
- *     (e.g. "items-0").
+ *  1. Closest "tr.form-row" or ".inline-related" container with an ID — its
+ *     ID as-is (e.g. "items-0"), matching Django's own inline field naming.
+ *  2. element.name parsed as "<prefix>-<number>" or
+ *     "<prefix>-<number>-<field>" — the "<prefix>-<number>" part (e.g.
+ *     "items-0"); rows without an ID (Unfold's) use this.
  *  3. Empty string if neither source yields a match.
  * @param {HTMLElement} element - The element to resolve the prefix for.
  * @returns {string} The row prefix string, or "" if none can be determined.
@@ -140,10 +141,10 @@ function getInitialValue(el) {
 function getRowPrefix(element) {
     const container =
         element.closest("tr.form-row") || element.closest(".inline-related");
-    if (container) {
-        return container?.id || "";
+    if (container?.id) {
+        return container.id;
     }
-    const regex = /^([a-zA-Z0-9_-]+)-(\d+)$/;
+    const regex = /^([a-zA-Z0-9_-]+)-(\d+)(?:-[a-zA-Z0-9_]+)?$/;
     const match = element?.name?.match(regex);
 
     if (match) {
@@ -193,4 +194,20 @@ function initFromWindow() {
     }
 }
 
-initFromWindow();
+/**
+ * Deferred (the default), this runs after the DOM is parsed and before our
+ * alpine.js: process the form now. Loaded as a plain script instead (when
+ * another Alpine.js, e.g. Unfold's, is already on the page), the DOM isn't
+ * ready yet: process it on "alpine:init", right before Alpine starts.
+ */
+function start() {
+    if (document.readyState === "loading") {
+        document.addEventListener("alpine:init", initFromWindow, {
+            once: true,
+        });
+    } else {
+        initFromWindow();
+    }
+}
+
+start();
