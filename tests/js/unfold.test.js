@@ -22,7 +22,10 @@ describe("contrib/unfold.js", () => {
         window.prepareUnfoldAlpineBeforeLoad();
         expect(window.DjangoFormAlpine.resolvers).toEqual({ mine });
 
-        window.DjangoFormAlpine = { resolvers: { mine }, useAdminResolvers: true };
+        window.DjangoFormAlpine = {
+            resolvers: { mine },
+            useAdminResolvers: true,
+        };
         window.prepareUnfoldAlpineBeforeLoad();
         expect(window.DjangoFormAlpine.resolvers.mine).toBe(mine);
         expect(window.DjangoFormAlpine.resolvers.form).toBe(r().form);
@@ -47,7 +50,9 @@ describe("contrib/unfold.js", () => {
 
         expect(r().form(input).tagName).toBe("FORM");
         expect(r().fieldset(input).tagName).toBe("FIELDSET");
-        expect(r()["form-row"](input)).toBe(document.querySelector(".form-row"));
+        expect(r()["form-row"](input)).toBe(
+            document.querySelector(".form-row"),
+        );
         expect(r()["form-multiline"](input)).toBe(
             document.querySelector(".form-row"),
         );
