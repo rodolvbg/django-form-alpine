@@ -40,7 +40,7 @@ Two mixins are provided:
 | ------------------ | ------------------------------------ | ------------------------------------------ |
 | `FormAlpineMixin`  | `core.js` + `alpine.js`              | Any Django form with custom resolvers      |
 | `AdminAlpineMixin` | `admin.js` + `core.js` + `alpine.js` | Django Admin (built-in resolvers included) |
-| `contrib.unfold.UnfoldAdminAlpineMixin` | `contrib/unfold.js` + `core.js` (Unfold's Alpine.js) | [django-unfold](docs/themes/unfold.md)'s admin |
+| `contrib.unfold.UnfoldAdminAlpineMixin` | `contrib/unfold.js` + `core.js` (Unfold's Alpine.js) | [django-unfold](https://github.com/rodolvbg/django-form-alpine/blob/master/docs/themes/unfold.md)'s admin |
 
 ## Quick start
 
@@ -204,7 +204,7 @@ When you provide your own resolvers, the admin preset is **not** loaded. If you 
 
 ## Themes
 
-- [django-unfold](docs/themes/unfold.md): `UnfoldAdminAlpineMixin`, with
+- [django-unfold](https://github.com/rodolvbg/django-form-alpine/blob/master/docs/themes/unfold.md): `UnfoldAdminAlpineMixin`, with
   Unfold's own Alpine.js.
 
 ## Configuration
@@ -218,12 +218,12 @@ django_form_alpine_JS_PATH = "path/to/your/custom-alpine.js"
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for full release notes.
+See [CHANGELOG.md](https://github.com/rodolvbg/django-form-alpine/blob/master/CHANGELOG.md) for full release notes.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/rodolvbg/django-form-alpine/blob/master/CONTRIBUTING.md)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/rodolvbg/django-form-alpine/blob/master/LICENSE) file for details.

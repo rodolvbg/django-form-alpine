@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.0.6] - 2026-10-05
 
 ### Added
 
@@ -10,7 +10,6 @@
   with an Alpine.js that another package loads first.
 - `__row_prefix__` falls back to the field's name when its inline row has
   no id.
-
 - Compatibility matrix via tox (`[tool.tox]` in `pyproject.toml`, using
   [tox-uv](https://github.com/tox-dev/tox-uv)): tests every Django series
   in `classifiers` (3.2 through 5.2) against its oldest and newest
