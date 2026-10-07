@@ -1,12 +1,11 @@
 [build-system]
 build-backend = "hatchling.build"
-requires = [ "hatchling" ]
+requires = [ "hatch-fancy-pypi-readme", "hatchling" ]
 
 [project]
 name = "django-form-alpine"
 version = "0.0.6"
 description = "Integrate Alpine.js into Django forms declaratively using widget attrs and resolvers"
-readme = { file = "README.md", content-type = "text/markdown" }
 keywords = [ "alpine", "alpinejs", "django", "django-admin", "form" ]
 license = "MIT"
 license-files = [ "LICENSE" ]
@@ -30,6 +29,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
+dynamic = [ "readme" ]
 dependencies = [
   "django>=3.2",
 ]
@@ -67,7 +67,20 @@ dev = [
 ]
 
 [tool.hatch]
+# PyPI's description: the README with its relative links (images, docs)
+# made absolute, so they work outside GitHub too. HEAD is the repo's
+# default branch, whatever its name.
+metadata.hooks.fancy-pypi-readme.content-type = "text/markdown"
+metadata.hooks.fancy-pypi-readme.fragments = [ { path = "README.md" } ]
 build.targets.wheel.packages = [ "src/django_form_alpine" ]
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\]\((docs/[^)\s]+\.(?:png|jpe?g|gif|svg|webp))\)'
+replacement = '](https://raw.githubusercontent.com/rodolvbg/django-form-alpine/HEAD/\1)'
+
+[[tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions]]
+pattern = '\]\(((?:docs/|CHANGELOG|CONTRIBUTING|LICENSE)[^)\s]*)\)'
+replacement = '](https://github.com/rodolvbg/django-form-alpine/blob/HEAD/\1)'
 
 [tool.ruff]
 target-version = "py39"

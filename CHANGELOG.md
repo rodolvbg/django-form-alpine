@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- The README keeps relative links, made absolute in the package's
+  description on PyPI when it is built (`hatch-fancy-pypi-readme`).
+
 ## [0.0.6] - 2026-10-05
 
 ### Added
