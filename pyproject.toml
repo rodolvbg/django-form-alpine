@@ -90,8 +90,24 @@ line-length = 88
 # reformat embedded Python code fences in Markdown, which would otherwise
 # touch both.
 extend-exclude = [ "docs", "README.md" ]
-lint.select = [ "B", "DJ", "E", "F", "I", "UP", "W" ]
-lint.ignore = [ "E203" ]
+lint.select = [
+  "B",
+  "DJ",
+  "E",
+  "F",
+  "I",
+  # flake8-type-checking
+  "TC",
+  "UP",
+  "W",
+]
+lint.ignore = [
+  "E203",
+  # runtime-cast-value
+  # Forces quoting the type argument in typing.cast(), even when the type is a
+  # normal runtime import. Purely stylistic, so we ignore it.
+  "TC006",
+]
 
 [tool.mypy]
 mypy_path = "src:example"
