@@ -1,5 +1,6 @@
 import django
 from django.forms import Media
+from django.test import SimpleTestCase, override_settings
 
 from django_form_alpine import AdminAlpineMixin, FormAlpineMixin
 from django_form_alpine.contrib.unfold import UnfoldAdminAlpineMixin
@@ -23,7 +24,7 @@ class MockUnfoldWithMixin(UnfoldAdminAlpineMixin, MockBase):
     pass
 
 
-class TestFormAlpineMixin:
+class TestFormAlpineMixin(SimpleTestCase):
     """Media added to plain forms."""
 
     def test_media_includes_alpine_js(self):
@@ -38,7 +39,7 @@ class TestFormAlpineMixin:
             assert "defer" in media_js
 
 
-class TestAdminAlpineMixin:
+class TestAdminAlpineMixin(SimpleTestCase):
     """Media added to admin classes."""
 
     def test_media_includes_alpine_and_admin_js(self):
@@ -53,16 +54,15 @@ class TestAdminAlpineMixin:
     def test_media_preserves_base_media(self):
         assert "base.js" in str(MockAdminWithMixin().media)
 
-    def test_custom_alpine_js_path(self, settings):
-        settings.django_form_alpine_JS_PATH = "custom/alpine.js"
-
+    @override_settings(django_form_alpine_JS_PATH="custom/alpine.js")
+    def test_custom_alpine_js_path(self):
         media_js = str(MockAdminWithMixin().media)
 
         assert "custom/alpine.js" in media_js
         assert "django_form_alpine/js/alpine.js" not in media_js
 
 
-class TestUnfoldAdminAlpineMixin:
+class TestUnfoldAdminAlpineMixin(SimpleTestCase):
     """Media added to Unfold admin classes."""
 
     def test_media_uses_unfolds_alpine(self):
