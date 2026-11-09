@@ -28,6 +28,7 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
 ]
 dynamic = [ "readme" ]
 dependencies = [
@@ -131,10 +132,10 @@ ini_options.addopts = "--cov=django_form_alpine --cov-report=term-missing"
 ini_options.DJANGO_SETTINGS_MODULE = "tests.settings"
 
 [tool.coverage]
-run.branch = true
 run.source = [ "django_form_alpine" ]
-report.show_missing = true
+run.branch = true
 report.skip_covered = true
+report.show_missing = true
 
 [tool.tox]
 env_list = [
@@ -153,7 +154,8 @@ env_list = [
   "py39-dj41",
   "py39-dj42",
 ]
-env_run_base.commands = [ [ "pytest", "tests", "--ignore=tests/e2e", "--no-cov", "{posargs}" ] ]
+env_run_base.package = "wheel"
+env_run_base.wheel_build_env = ".pkg"
 env_run_base.deps = [
   "pytest",
   "pytest-django",
@@ -166,5 +168,4 @@ env_run_base.deps = [
   { replace = "if", condition = "factor.dj51", then = [ "django>=5.1,<5.2" ], extend = true },
   { replace = "if", condition = "factor.dj52", then = [ "django>=5.2,<5.3" ], extend = true },
 ]
-env_run_base.package = "wheel"
-env_run_base.wheel_build_env = ".pkg"
+env_run_base.commands = [ [ "pytest", "tests", "--ignore=tests/e2e", "--no-cov", "{posargs}" ] ]
